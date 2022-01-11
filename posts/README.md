@@ -1,0 +1,1 @@
+Once a post has been completed and is posted to HIVE, a copy of the markup code should be brought to here, named by the yymmdd_hhmm date and time, and should include a link to the post itself on HIVE.
