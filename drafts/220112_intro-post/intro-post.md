@@ -20,14 +20,14 @@ Body text summary goes here. Write it last!
 
 ## Who I am
 
-<span style="float:right;padding-left:10px;">![](frittro-and-kitten.png)</span>
-Greetings, I am [@frittro](https://ecency.com/@frittro), a newcomer to the
-<span style="white-space: nowrap;">![](hive_18px.png) HIVE</span> blockchain. I
-live in Auckland, New Zealand. I am an _"older adult"_ (or an _"elder geek"_, or
-_"silver surfer"_, but never _"ok boomer"_, please). I am married for 21 years
-to `@frittni`, with no children (unfortunately), and currently no pets of our
-own either. We have close friends who run a cattery though, so we enjoy their
-company, at least. I am
+<span style="float:right;padding-left:10px;">![](frittro-and-kitten.png)</span>Greetings,
+I am [@frittro](https://ecency.com/@frittro), a newcomer to the
+<span style="white-space: nowrap;">![hive_18px.png](https://images.ecency.com/DQma2JHmpCFGMiJob7Cc2J8KhZuAZ1NucPSWbga61xs7Cn9/hive_18px.png)
+HIVE</span> blockchain. I live in Auckland, New Zealand. I am an _"older adult"_
+(or an _"elder geek"_, or _"silver surfer"_, but never _"ok boomer"_, please). I
+am married for 21 years to `@frittni`, with no children (unfortunately), and
+currently no pets of our own either. We have close friends who run a cattery
+though, so we enjoy their company, at least. I am
 <span style="white-space: nowrap;">[![actually_autistic_18px.png](https://images.ecency.com/DQmZCG6iPzkfHputwavX2hX5bGgpEQWcTSuSoGzL7f6RAfu/actually_autistic_18px.png) #actuallyautistic](https://ecency.com/created/actuallyautistic),</span>
 I have type 2
 <span style="white-space: nowrap;">[![diabetes_18px.png](https://images.ecency.com/DQmX8nx8LoK2S67ipYdPekSvTSW5XRTYPdyng53DJdKSeUc/diabetes_18px.png) diabetes](https://ecency.com/created/diabetes),</span>
@@ -73,8 +73,9 @@ Twitter</span>...
 ## Who I was
 
 I was [@trisquelwhare](https://ecency.com/@trisquelwhare), an account migrated
-to the <span style="white-space: nowrap;">![](hive_18px.png) HIVE</span>
-blockchain from the
+to the
+<span style="white-space: nowrap;">![hive_18px.png](https://images.ecency.com/DQma2JHmpCFGMiJob7Cc2J8KhZuAZ1NucPSWbga61xs7Cn9/hive_18px.png)
+HIVE</span> blockchain from the
 <span style="white-space: nowrap;">![steem_18px.png](https://images.ecency.com/DQmdiTk78nWRoEwdcELgAWmzVpeyMBoQuLcfu3ku37n6S44/steem_18px.png)
 Steem</span> blockchain. I was active on there from late 2017 through most of
 2018, and got hooked on SteemMonsters (SM), which is now called Splinterlands. I
