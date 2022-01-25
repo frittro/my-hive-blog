@@ -40,20 +40,22 @@ Tags (Content, Community, Tribe): stem, linux, homelab, raspberrypi, yunohost, t
   <hr/>
   <p><div class="pull-left"><img src="https://images.ecency.com/DQmXgQ3Lyx6w3oSiAAuA2q33enQeQMhHX8kSDV2sHhtfHL8/reader.png"/></div><strong>SD-card reader – </strong>This is a USB2.0, Transcend TS-RDP5K SD-card reader. It is part of the reason that the start of my project was delayed. This handy piece of tech had gone missing in my home somewhere, and I needed to find it before I could start my project!</p>
   <hr/>
-  <p><div class="pull-right"></div><img src="https://images.ecency.com/DQmXqtDZfcfjhp9HC6rYvyuVu9fsw2PmoLQzb485Wd1RsAy/laptop.png"/></div><strong>Laptop – </strong>My trusty Lenovo ThinkPad T400 laptop is being used to set up the Raspberry Pi, and it will ultimately become one of the client machines connecting to the new server. This is a run-of-the-mill business laptop, with a 2.26GHz Intel® Core™2 Duo processor, 4GB  </p>
+  <p><div class="pull-right"><img src="https://images.ecency.com/DQmXqtDZfcfjhp9HC6rYvyuVu9fsw2PmoLQzb485Wd1RsAy/laptop.png"/></div><strong>Laptop – </strong>My trusty Lenovo ThinkPad T400 laptop is being used to set up the Raspberry Pi, and it will ultimately become one of the client machines connecting to the new server. This is a run-of-the-mill business laptop, with a 2.26GHz Intel® Core™2 Duo processor, 4GB  </p>
   <p>
     <center>
       <img src="https://images.ecency.com/DQmdk1kErvvHhZVAaQHHZyu8GcnVw6KQz9CPs2voEHh2YGn/maori_divider.png"/>
     </center>
   </p>
   <h2>How it all begins.</h2>
-  <p>I'm at my laptop, logged in to the operating system, which is currently still Ubuntu 20.04 LTS (Focal Fossa) for now. The first thing that I reach for is my µSD-card and the card reader. I know that there will be some crap on it from the last time I used it, but I am diligent with my backups, so I'm unafraid to blank the card and start again. The first command I issue from the command line terminal will do just that. First, I need to ensure that I'm working on the correct drive. I'd hate to wipe out my booting system!<br/>
+  <p>I'm at my laptop, logged in to the operating system, which is currently still running Ubuntu 20.04 LTS (Focal Fossa) for now. The first thing that I reach for is my µSD-card and the card reader. I know that there will be some crap on it from the last time I used it, but I am diligent with my backups, so I'm unafraid to blank the card and start again. The first command I issue from the command line terminal will do just that. First, I need to ensure that I'm working on the correct drive. I'd hate to wipe out my booting system!
 <code><pre>user@laptop:~$ lsblk
   ( ... output trimmed ... )
+  sda      8:0    0 232.9G  0 disk 
+  └─sda1   8:1    0 232.9G  0 part /
   sdb      8:16   1  29.5G  0 disk
   ├─sdb1   8:17   1   256M  0 part /media/user/boot
   └─sdb2   8:18   1  29.3G  0 part /media/user/rootfs</pre></code></p>
-  <p>Okay, so it looks like I am after the <code>sdb</code> drive, in my case. If you are following along, it is important that you get this right for your own environment!<br/>
+  <p>Okay, so it looks like I am after the <code>sdb</code> drive, in my case. If you are following along, it is important that you get this right for your own environment!
 <code><pre>user@laptop:~$ sudo dd if=/dev/zero of=<strong>/dev/sdb</strong> bs=4096 status=progress
   [sudo] password for user:
   31687921664 bytes (32 GB, 30 GiB) copied, 2272 s, 13.9 MB/s
@@ -61,7 +63,53 @@ Tags (Content, Community, Tribe): stem, linux, homelab, raspberrypi, yunohost, t
   7737089+0 records in
   7737088+0 records out
   31691112448 bytes (32 GB, 30 GiB) copied, 2272.42 s, 13.9 MB/s</pre></code></p>
-  <p>Can anyone spot the mistake that I have made already? In my case, it isn't a major issue, and I can carry on. But for you, this might be a disaster! Hint: <spoiler>compare the capacity of the µSD-card that I just blanked out.</spoiler></p>
+  <p><blockquote><sup>⚠️ Can anyone spot the mistake that I have made already? In my case, it isn't a major issue, and I can carry on. But for you, this might be a disaster! Hint: compare the capacity of the µSD-card that I just blanked out.</sup></blockquote></p>
+  <p>Now that my µSD-card is completely blank, it is time to put the operating system onto it. I will be using the <a href="https://yunohost.org/en/install/hardware:rpi2plus" target="_blank"> <img src="https://images.ecency.com/DQmUvNcWr7aGv2B2vec5unowhbMymYBNUEVXRywKJpfvvPB/yunohost_18px.png"/> YunoHost v4.1.7.2</a> distribution initially, and then I will upgrade it to  <img src="https://images.ecency.com/DQmUvNcWr7aGv2B2vec5unowhbMymYBNUEVXRywKJpfvvPB/yunohost_18px.png"/> YunoHost v4.3.4.2 later. The reason that I'm installing v4.1.7.2 initially here is that it is the latest bundled version for the Raspberry Pi 4+ at present. If you are reading this in the future and following these step-by-step instructions, it is always best to use which ever installation package is the latest for your hardware platform. At present, the YunoHost maintainers haven't packaged the latest (v4.3.4.2) bundle for the Raspberry Pi yet, so it is an upgrade option only for me, once I have v4.1.7.2 installed.</p>
+  <p>Before we begin downloading, we need to find a place to put everything on the local computer, in my case, on my laptop. I have pre-created a folder for this purpose, and I will just change to it now...
+<code><pre>user@laptop:~$ cd ~/dev/rpi/deployment/test-fmds.noho.st</pre></code></p>
+  <p>Next we are going to get the installation package itself. You can, of course, do this all from the Web, but I prefer to use the terminal for this, as it is self-documenting, I can just copy and paste the output from the terminal.
+<code><pre>user@laptop:~$ wget https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip
+  --2022-01-16 14:03:07--  https://build.yunohost.org/yunohost-buster-4.1.7.2- rpi-stable.img.zip
+  Resolving build.yunohost.org (build.yunohost.org)... 2001:910:1410::1, 80.67.172.144
+  Connecting to build.yunohost.org (build.yunohost.org)|2001:910:1410::1|:443... connected.
+  HTTP request sent, awaiting response... 200 OK
+  Length: 682245487 (651M) [application/zip]
+  Saving to: ‘yunohost-buster-4.1.7.2-rpi-stable.img.zip’
+  yunohost-buster-4.1.7.2-rpi-sta 100%[====================================================>] 650.64M   101KB/s    in 64m 50s 
+  2022-01-16 15:07:59 (171 KB/s) - ‘yunohost-buster-4.1.7.2-rpi-stable.img.zip’ saved [682245487/682245487]</pre></code></p>
+  <p>Now we will get the checksum file for that installation package...
+  <code><pre>user@laptop:~$ wget https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip.sha256sum
+  --2022-01-16 16:13:52--  https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip.sha256sum
+  Resolving build.yunohost.org (build.yunohost.org)... 2001:910:1410::1, 80.67.172.144
+  Connecting to build.yunohost.org (build.yunohost.org)|2001:910:1410::1|:443... connected.
+  HTTP request sent, awaiting response... 200 OK
+  Length: 109 [application/octet-stream]
+  Saving to: ‘yunohost-buster-4.1.7.2-rpi-stable.img.zip.sha256sum’
+  yunohost-buster-4.1.7.2-rpi-sta 100%[====================================================>]     109  --.-KB/s    in 0s      
+  2022-01-16 16:13:54 (6.99 MB/s) - ‘yunohost-buster-4.1.7.2-rpi-stable.img.zip.sha256sum’ saved [109/109]</pre></code></p>
+ <p>...and get the GPG signature for the installation package...
+<code><pre>user@laptop:~$ wget https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip.sig
+  --2022-01-16 16:15:29--  https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip.sig
+  Resolving build.yunohost.org (build.yunohost.org)... 2001:910:1410::1, 80.67.172.144
+  Connecting to build.yunohost.org (build.yunohost.org)|2001:910:1410::1|:443... connected.
+  HTTP request sent, awaiting response... 200 OK
+  Length: 310 [application/octet-stream]
+  Saving to: ‘yunohost-buster-4.1.7.2-rpi-stable.img.zip.sig’
+  yunohost-buster-4.1.7.2-rpi-sta 100%[====================================================>]     310  --.-KB/s    in 0s      
+  2022-01-16 16:15:30 (14.4 MB/s) - ‘yunohost-buster-4.1.7.2-rpi-stable.img.zip.sig’ saved [310/310]</pre></code></p>
+<p>Now that we have everything we need to get started, we can proceed with the checking and then burning the operating system onto the µSD-card.</p>
+  <p>
+    <center>
+      <img src="https://images.ecency.com/DQmdk1kErvvHhZVAaQHHZyu8GcnVw6KQz9CPs2voEHh2YGn/maori_divider.png"/>
+    </center>
+  </p>
+  <h2>Verifying and validating.</h2>
+  <p>The next two steps are vitally important for making sure that the package we downloaded in the previous step is both internally consistent (eg. the file downloaded correctly), and that it has not been modified in any way since it was published by the package maintainers. This involves both <strong>verifying</strong> and <strong>validating</strong> the downloaded package. Most people will know how to <em>verify</em> a package using a checksum. However, what happens if, after the package was released, some nefarious person has modified the code, re-uploaded it, with a new checksum? This is where <em>validating</em> comes in to play.</p>
+  <p>To <em>verify</em> our downloaded package, we simply use the <code>sha256sum</code> command...
+<code><pre>user@laptop:~$ sha256sum -c yunohost-buster-4.1.7.2-rpi-stable.img.zip.sha256sum
+  yunohost-buster-4.1.7.2-rpi-stable.img.zip: OK</pre></code></p>
+  <p>That was quick and easy. The next step is a little more involved. We will now <em>validate</em> our downloaded package.</p>
+
   <p>
     <center>
       <img src="https://images.ecency.com/DQmdk1kErvvHhZVAaQHHZyu8GcnVw6KQz9CPs2voEHh2YGn/maori_divider.png"/>
