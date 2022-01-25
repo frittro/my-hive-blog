@@ -1,0 +1,1772 @@
+user@laptop:~$ sudo dd if=/dev/zero of=/dev/sdf bs=4096 status=progress
+[sudo] password for user: 
+31687921664 bytes (32 GB, 30 GiB) copied, 2272 s, 13.9 MB/s
+dd: error writing '/dev/sdf': No space left on device
+7737089+0 records in
+7737088+0 records out
+31691112448 bytes (32 GB, 30 GiB) copied, 2272.42 s, 13.9 MB/s
+
+user@laptop:~$ cd ~/dev/rpi/deployment/test-fmds.noho.st
+user@laptop:~$ wget https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip
+--2022-01-16 14:03:07--  https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip
+Resolving build.yunohost.org (build.yunohost.org)... 2001:910:1410::1, 80.67.172.144
+Connecting to build.yunohost.org (build.yunohost.org)|2001:910:1410::1|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 682245487 (651M) [application/zip]
+Saving to: ‘yunohost-buster-4.1.7.2-rpi-stable.img.zip’
+
+yunohost-buster-4.1.7.2-rpi-sta 100%[====================================================>] 650.64M   101KB/s    in 64m 50s 
+
+2022-01-16 15:07:59 (171 KB/s) - ‘yunohost-buster-4.1.7.2-rpi-stable.img.zip’ saved [682245487/682245487]
+
+user@laptop:~$ wget https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip.sha256sum
+--2022-01-16 16:13:52--  https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip.sha256sum
+Resolving build.yunohost.org (build.yunohost.org)... 2001:910:1410::1, 80.67.172.144
+Connecting to build.yunohost.org (build.yunohost.org)|2001:910:1410::1|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 109 [application/octet-stream]
+Saving to: ‘yunohost-buster-4.1.7.2-rpi-stable.img.zip.sha256sum’
+
+yunohost-buster-4.1.7.2-rpi-sta 100%[====================================================>]     109  --.-KB/s    in 0s      
+
+2022-01-16 16:13:54 (6.99 MB/s) - ‘yunohost-buster-4.1.7.2-rpi-stable.img.zip.sha256sum’ saved [109/109]
+
+user@laptop:~$ wget https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip.sig
+--2022-01-16 16:15:29--  https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip.sig
+Resolving build.yunohost.org (build.yunohost.org)... 2001:910:1410::1, 80.67.172.144
+Connecting to build.yunohost.org (build.yunohost.org)|2001:910:1410::1|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 310 [application/octet-stream]
+Saving to: ‘yunohost-buster-4.1.7.2-rpi-stable.img.zip.sig’
+
+yunohost-buster-4.1.7.2-rpi-sta 100%[====================================================>]     310  --.-KB/s    in 0s      
+
+2022-01-16 16:15:30 (14.4 MB/s) - ‘yunohost-buster-4.1.7.2-rpi-stable.img.zip.sig’ saved [310/310]
+
+user@laptop:~$ sha256sum -c yunohost-buster-4.1.7.2-rpi-stable.img.zip.sha256sum
+yunohost-buster-4.1.7.2-rpi-stable.img.zip: OK
+user@laptop:~$ gpg --edit-key build@yunohost.org
+gpg (GnuPG) 2.2.19; Copyright (C) 2019 Free Software Foundation, Inc.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+
+pub  rsa2048/360AAF3259A3E6FF
+     created: 2012-04-17  expires: never       usage: SC  
+     trust: unknown       validity: full
+sub  rsa2048/CE7406516D9CFB3A
+     created: 2012-04-17  expires: never       usage: E   
+[  full  ] (1). YunoHost <build@yunohost.org>
+
+gpg> fpr
+pub   rsa2048/360AAF3259A3E6FF 2012-04-17 YunoHost <build@yunohost.org>
+ Primary key fingerprint: 1904 C5B4 2E48 56DC D4E9  CF96 360A AF32 59A3 E6FF
+
+gpg> quit
+
+user@laptop:~$ unzip yunohost-buster-4.1.7.2-rpi-stable.img.zip | sudo dd of=/dev/sdb bs=64k oflag=dsync status=progress
+[sudo] password for user: 
+2395996160 bytes (2.4 GB, 2.2 GiB) copied, 227 s, 10.6 MB/s 
+36672+0 records in
+36672+0 records out
+2403336192 bytes (2.4 GB, 2.2 GiB) copied, 227.628 s, 10.6 MB/s
+user@laptop:~$ udisksctl unmount -b /dev/sdb1 && udisksctl unmount -b /dev/sdb2 && udisksctl power-off -b /dev/sdb
+Unmounted /dev/sdb1.
+Unmounted /dev/sdb2.
+user@laptop:~$ ping 192.168.1.4
+PING 192.168.1.4 (192.168.1.4) 56(84) bytes of data.
+64 bytes from 192.168.1.4: icmp_seq=1 ttl=64 time=0.347 ms
+64 bytes from 192.168.1.4: icmp_seq=2 ttl=64 time=0.202 ms
+64 bytes from 192.168.1.4: icmp_seq=3 ttl=64 time=0.248 ms
+64 bytes from 192.168.1.4: icmp_seq=4 ttl=64 time=0.271 ms
+^C
+--- 192.168.1.4 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3052ms
+rtt min/avg/max/mdev = 0.202/0.267/0.347/0.052 ms
+
+user@laptop:~$ ssh root@192.168.1.4
+root@192.168.1.4's password: 
+Linux yunohost 5.10.11-v7l+ #1399 SMP Thu Jan 28 12:09:48 GMT 2021 armv7l
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+======================================================================
+
+ Congratulations on setting up your YunoHost server !                                                                        
+                                                                                                                             
+ To finish the installation, you should run the postinstallation.
+ You can find documentation about it on :
+     https://yunohost.org/postinstall
+
+ You can run it from the command line interface with :
+     $ yunohost tools postinstall
+
+ Or from a browser by accessing one of your local IP :
+     192.168.1.4
+     2404:4408:x:x:x:x:x:x
+     
+======================================================================
+
+Wi-Fi is currently blocked by rfkill.
+Use raspi-config to set the country before use.
+
+root@yunohost:~# yunohost tools postinstall
+Main domain: fmds-test.noho.st
+New administration password: 
+Confirm new administration password: 
+Info: Installing YunoHost...
+Info: The configuration file '/etc/nsswitch.conf' is now managed by YunoHost (category nsswitch).
+Success! Configuration updated for 'nsswitch'
+Info: The configuration file '/etc/nslcd.conf' is now managed by YunoHost (category nslcd).
+Success! Configuration updated for 'nslcd'
+Success! LDAP initialized
+Success! Configuration updated for 'ssl'
+Success! Local certification authority created.
+fmds-test.noho.st.+165+39522
+Success! DynDNS domain registered
+Success! DynDNS cron job created
+Success! Self-signed certificate now installed for the domain 'fmds-test.noho.st'
+Success! Domain created
+Success! The main domain has been changed
+Info: Your root password have been replaced by your admin password.
+Success! The administration password was changed
+Success! Firewall reloaded
+Success! App catalog system initialized!
+Info: Updating application catalog…
+Success! The application catalog has been updated!
+Success! The service 'yunohost-firewall' will now be automatically started during system boots.
+Success! Service 'yunohost-firewall' started
+Success! Configuration updated for 'ssh'
+Info: The configuration file '/etc/metronome/metronome.cfg.lua' is now managed by YunoHost (category metronome).
+Success! Configuration updated for 'metronome'
+Info: The configuration file '/etc/postfix/master.cf' is now managed by YunoHost (category postfix).
+Info: The configuration file '/etc/postfix/main.cf' is now managed by YunoHost (category postfix).
+Info: The configuration file '/etc/default/postsrsd' is now managed by YunoHost (category postfix).
+Success! Configuration updated for 'postfix'
+Success! Configuration updated for 'yunohost'
+Success! Configuration updated for 'rspamd'
+Success! Configuration updated for 'apt'
+Success! Configuration updated for 'nginx'
+Info: The configuration file '/etc/default/dnsmasq' is now managed by YunoHost (category dnsmasq).
+Info: The configuration file '/etc/dnsmasq.conf' is now managed by YunoHost (category dnsmasq).
+Success! Configuration updated for 'dnsmasq'
+Info: The configuration file '/etc/mysql/my.cnf' is now managed by YunoHost (category mysql).
+Success! Configuration updated for 'mysql'
+Info: The configuration file '/etc/avahi/avahi-daemon.conf' is now managed by YunoHost (category avahi-daemon).
+Success! Configuration updated for 'avahi-daemon'
+Info: The configuration file '/etc/dovecot/dovecot.conf' is now managed by YunoHost (category dovecot).
+Success! Configuration updated for 'dovecot'
+Success! Configuration updated for 'slapd'
+Info: The configuration file '/etc/fail2ban/jail.conf' is now managed by YunoHost (category fail2ban).
+Success! Configuration updated for 'fail2ban'
+Success! YunoHost is now configured
+Warning: The post-install completed! To finalize your setup, please consider:
+    - adding a first user through the 'Users' section of the webadmin (or 'yunohost user create <username>' in command-line);
+    - diagnose potential issues through the 'Diagnosis' section of the webadmin (or 'yunohost diagnosis run' in command-line);
+    - reading the 'Finalizing your setup' and 'Getting to know Yunohost' parts in the admin documentation: https://yunohost.org/admindoc.
+root@yunohost:~# sudo apt update
+Get:1 http://archive.raspberrypi.org/debian buster InRelease [32.6 kB]
+Get:2 http://raspbian.raspberrypi.org/raspbian buster InRelease [15.0 kB]               
+E: Repository 'http://raspbian.raspberrypi.org/raspbian buster InRelease' changed its 'Suite' value from 'stable' to 'oldstable'
+N: This must be accepted explicitly before updates for this repository can be applied. See apt-secure(8) manpage for details.
+Do you want to accept these changes and continue updating from this repository? [y/N] y
+Hit:3 http://forge.yunohost.org/debian buster InRelease                                                                     
+E: Repository 'http://archive.raspberrypi.org/debian buster InRelease' changed its 'Suite' value from 'testing' to 'oldstable'
+N: This must be accepted explicitly before updates for this repository can be applied. See apt-secure(8) manpage for details.
+Do you want to accept these changes and continue updating from this repository? [y/N] y
+Get:4 http://raspbian.raspberrypi.org/raspbian buster/main armhf Packages [13.0 MB]                                         
+Get:5 http://archive.raspberrypi.org/debian buster/main armhf Packages [393 kB]
+Get:6 http://raspbian.raspberrypi.org/raspbian buster/contrib armhf Packages [58.8 kB]                                      
+Get:7 http://raspbian.raspberrypi.org/raspbian buster/non-free armhf Packages [104 kB]                                      
+Fetched 13.6 MB in 28s (490 kB/s)                                                                                           
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+161 packages can be upgraded. Run 'apt list --upgradable' to see them.
+root@yunohost:~# yunohost user create myuser
+First name: myuser
+Last name: myuser
+Password: 
+Confirm password: 
+Available domains:
+- fmds-test.noho.st
+Domain to use for the user's email address and XMPP account (default: fmds-test.noho.st): 
+Success! User created
+fullname: myuser myuser
+mail: myuser@fmds-test.noho.st
+username: myuser
+root@yunohost:~# yunohost diagnosis run
+Success! Everything looks good for Base system!
+Warning: Found 1 item(s) that could be improved for Internet connectivity.
+Success! Everything looks good for DNS records!
+Error: Found 8 significant issue(s) related to Ports exposure!
+Error: Found 1 significant issue(s) related to Web!
+Error: Found 7 significant issue(s) related to Email!
+Success! Everything looks good for Services status check!
+Success! Everything looks good for System resources!
+Success! Everything looks good for System configurations!
+Warning: To see the issues found, you can go to the Diagnosis section of the webadmin, or run 'yunohost diagnosis show --issues' from the command-line.
+root@yunohost:~# yunohost diagnosis show --issues --human-readable
+=================================
+Internet connectivity (ip)
+=================================
+
+[WARNING] DNS resolution seems to be working, but it looks like you're using a custom /etc/resolv.conf.
+  - The file /etc/resolv.conf should be a symlink to /etc/resolvconf/run/resolv.conf itself pointing to 127.0.0.1 (dnsmasq). If you want to manually configure DNS resolvers, please edit /etc/resolv.dnsmasq.conf.
+
+
+
+=================================
+Ports exposure (ports)
+=================================
+
+[ERROR] Port 22 is not reachable from outside in IPv6.
+  - Exposing this port is needed for admin features (service ssh)
+  - To fix this issue, you most probably need to configure port forwarding on your internet router as described in https://yunohost.org/isp_box_config
+
+[ERROR] Port 25 is not reachable from outside in IPv6.
+  - Exposing this port is needed for email features (service postfix)
+  - To fix this issue, you most probably need to configure port forwarding on your internet router as described in https://yunohost.org/isp_box_config
+
+[ERROR] Port 80 is not reachable from outside in IPv6.
+  - Exposing this port is needed for web features (service nginx)
+  - To fix this issue, you most probably need to configure port forwarding on your internet router as described in https://yunohost.org/isp_box_config
+
+[ERROR] Port 443 is not reachable from outside in IPv6.
+  - Exposing this port is needed for web features (service nginx)
+  - To fix this issue, you most probably need to configure port forwarding on your internet router as described in https://yunohost.org/isp_box_config
+
+[ERROR] Port 587 is not reachable from outside in IPv6.
+  - Exposing this port is needed for email features (service postfix)
+  - To fix this issue, you most probably need to configure port forwarding on your internet router as described in https://yunohost.org/isp_box_config
+
+[ERROR] Port 993 is not reachable from outside in IPv6.
+  - Exposing this port is needed for email features (service dovecot)
+  - To fix this issue, you most probably need to configure port forwarding on your internet router as described in https://yunohost.org/isp_box_config
+
+[ERROR] Port 5222 is not reachable from outside in IPv6.
+  - Exposing this port is needed for xmpp features (service metronome)
+  - To fix this issue, you most probably need to configure port forwarding on your internet router as described in https://yunohost.org/isp_box_config
+
+[ERROR] Port 5269 is not reachable from outside in IPv6.
+  - Exposing this port is needed for xmpp features (service metronome)
+  - To fix this issue, you most probably need to configure port forwarding on your internet router as described in https://yunohost.org/isp_box_config
+
+
+
+=================================
+Web (web)
+=================================
+
+[ERROR] Domain fmds-test.noho.st appears unreachable through HTTP from outside the local network in IPv6, though it works in IPv4.
+  - Timed-out while trying to contact your server from outside. It appears to be unreachable.
+    1. The most common cause for this issue is that port 80 (and 443) are not correctly forwarded to your server.
+    2. You should also make sure that the service nginx is running
+    3. On more complex setups: make sure that no firewall or reverse-proxy is interfering.
+
+
+
+=================================
+Email (mail)
+=================================
+
+[ERROR] The SMTP mail server is unreachable from the outside on IPv6. It won't be able to receive emails.
+  - Could not open a connection on port 25 to your server in IPv6. It appears to be unreachable.
+    1. The most common cause for this issue is that port 25 is not correctly forwarded to your server.
+    2. You should also make sure that service postfix is running.
+    3. On more complex setups: make sure that no firewall or reverse-proxy is interfering.
+
+[ERROR] The reverse DNS is not correctly configured in IPv4. Some emails may fail to get delivered or may get flagged as spam.
+  - Current reverse DNS: dynamic-cpe-pool.orcon.net.nz
+    Expected value: fmds-test.noho.st
+  - You should first try to configure the reverse DNS with fmds-test.noho.st in your internet router interface or your hosting provider interface. (Some hosting provider may require you to send them a support ticket for this).
+  - Some providers won't let you configure your reverse DNS (or their feature might be broken...). If you are experiencing issues because of this, consider the following solutions:
+     - Some ISP provide the alternative of using a mail server relay though it implies that the relay will be able to spy on your email traffic.
+    - A privacy-friendly alternative is to use a VPN *with a dedicated public IP* to bypass this kind of limits. See https://yunohost.org/#/vpn_advantage
+    - Or it's possible to switch to a different provider
+
+[ERROR] The reverse DNS is not correctly configured in IPv6. Some emails may fail to get delivered or may get flagged as spam.
+  - Current reverse DNS: default-rdns.vocus.co.nz
+    Expected value: fmds-test.noho.st
+  - You should first try to configure the reverse DNS with fmds-test.noho.st in your internet router interface or your hosting provider interface. (Some hosting provider may require you to send them a support ticket for this).
+  - Some providers won't let you configure your reverse DNS (or their feature might be broken...). If your reverse DNS is correctly configured for IPv4, you can try disabling the use of IPv6 when sending emails by running 'yunohost settings set smtp.allow_ipv6 -v off'. Note: this last solution means that you won't be able to send or receive emails from the few IPv6-only servers out there.
+
+[ERROR] Your IP or domain 121.x.x.x is blacklisted on Spamhaus ZEN
+  - The blacklist reason is: "https://www.spamhaus.org/query/ip/121.x.x.x"
+  - After identifying why you are listed and fixed it, feel free to ask for your IP or domaine to be removed on https://www.spamhaus.org/zen/
+
+[ERROR] Your IP or domain 121.x.x.x is blacklisted on Invaluement
+  - The blacklist reason is: "unauthorized or malfunctioned access to invaluement - using old/outdated host names - so now ALL queries get a 'listed' answer - STOP misusing invaluement - contact invaluement for a valid subscription with valid access instructions"
+  - After identifying why you are listed and fixed it, feel free to ask for your IP or domaine to be removed on https://www.invaluement.com/
+
+[ERROR] Your IP or domain 121.x.x.x is blacklisted on SPFBL.net RBL
+  - The blacklist reason is: "https://matrix.spfbl.net/121.x.x.x"
+  - After identifying why you are listed and fixed it, feel free to ask for your IP or domaine to be removed on https://spfbl.net/en/dnsbl/
+
+[ERROR] Your IP or domain 2404:4408:x:x:x:x:x:x is blacklisted on SPFBL.net RBL
+  - The blacklist reason is: "https://matrix.spfbl.net/2404:4408:x:x:x:x:x:x"
+  - After identifying why you are listed and fixed it, feel free to ask for your IP or domaine to be removed on https://spfbl.net/en/dnsbl/
+
+
+
+
+root@yunohost:~# rm /etc/resolv.conf
+root@yunohost:~# ln -s /etc/resolvconf/run/resolv.conf /etc/resolv.conf
+root@yunohost:~# yunohost domain cert-install
+Error: Domain fmds-test.noho.st does not seem to be accessible through HTTP. Please check the 'Web' category in the diagnosis for more info. (If you know what you are doing, use '--no-checks' to turn off those checks.)
+root@yunohost:~# sudo apt-get update && sudo apt-get upgrade
+Hit:1 http://forge.yunohost.org/debian buster InRelease                                                               
+Hit:2 http://raspbian.raspberrypi.org/raspbian buster InRelease     
+Hit:3 http://archive.raspberrypi.org/debian buster InRelease
+Reading package lists... Done                 
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+Calculating upgrade... Done
+The following packages have been kept back:
+  moulinette redis-server redis-tools yunohost yunohost-admin
+The following packages will be upgraded:
+  alsa-utils apt apt-transport-https apt-utils avahi-daemon base-files bind9-host bind9utils bluez curl debconf
+  debconf-i18n debconf-utils distro-info-data dnsutils firmware-atheros firmware-brcm80211 firmware-libertas
+  firmware-misc-nonfree firmware-realtek groff-base iputils-ping isc-dhcp-client isc-dhcp-common klibc-utils ldap-utils
+  libapt-inst2.0 libapt-pkg5.0 libasound2 libasound2-data libavahi-common-data libavahi-common3 libavahi-core7 libbind9-161
+  libbsd0 libc-bin libc-dev-bin libc-l10n libc6 libc6-dbg libc6-dev libcurl3-gnutls libcurl4 libdns-export1104 libdns1104
+  libgcrypt20 libgnutls30 libgssapi-krb5-2 libhogweed4 libicu63 libirs161 libisc-export1100 libisc1100 libisccc161
+  libisccfg163 libjs-jquery libjs-underscore libk5crypto3 libklibc libkrb5-3 libkrb5support0 libldap-2.4-2 libldap-common
+  liblwres161 liblz4-1 libmariadb3 libnettle6 libnftnl11 libnginx-mod-http-auth-pam libnginx-mod-http-cache-purge
+  libnginx-mod-http-dav-ext libnginx-mod-http-echo libnginx-mod-http-fancyindex libnginx-mod-http-geoip
+  libnginx-mod-http-headers-more-filter libnginx-mod-http-image-filter libnginx-mod-http-lua libnginx-mod-http-ndk
+  libnginx-mod-http-perl libnginx-mod-http-subs-filter libnginx-mod-http-uploadprogress libnginx-mod-http-upstream-fair
+  libnginx-mod-http-xslt-filter libnginx-mod-mail libnginx-mod-nchan libnginx-mod-stream libnss-myhostname libntfs-3g883
+  libpam-systemd libpython3.7 libpython3.7-minimal libpython3.7-stdlib libraspberrypi-bin libraspberrypi-dev
+  libraspberrypi-doc libraspberrypi0 libssl1.1 libsystemd0 libtiff5 libudev1 libwebp6 libx11-6 libx11-data libxml2 libzstd1
+  linux-libc-dev locales mariadb-client-10.3 mariadb-client-core-10.3 mariadb-common mariadb-server mariadb-server-10.3
+  mariadb-server-core-10.3 metronome multiarch-support nginx-common nginx-extras ntfs-3g openssh-client openssh-server
+  openssh-sftp-server openssl php-pear php7.3-cli php7.3-common php7.3-curl php7.3-fpm php7.3-gd php7.3-intl php7.3-json
+  php7.3-ldap php7.3-mbstring php7.3-mysql php7.3-opcache php7.3-readline php7.3-xml pi-bluetooth psmisc python-dnspython
+  python3-debconf python3.7 python3.7-minimal raspberrypi-bootloader raspberrypi-kernel raspberrypi-net-mods
+  raspberrypi-sys-mods rpi-eeprom rpi-update slapd ssh ssowat systemd systemd-sysv tzdata udev wpasupplicant
+156 upgraded, 0 newly installed, 0 to remove and 5 not upgraded.
+Need to get 224 MB of archives.
+After this operation, 18.9 MB of additional disk space will be used.
+Do you want to continue? [Y/n] y
+Get:1 http://forge.yunohost.org/debian buster/stable armhf metronome armhf 3.14.5+ynh10-1 [394 kB]                          
+Get:3 http://archive.raspberrypi.org/debian buster/main armhf libc6-dbg armhf 2.28-10+rpt2+rpi1 [10.7 MB]                   
+Get:6 http://forge.yunohost.org/debian buster/stable armhf ssowat all 4.3.3 [759 kB]                                        
+Get:2 http://raspbian.mirror.geek.nz/raspbian buster/main armhf base-files armhf 10.3+rpi1+deb10u11 [70.2 kB]               
+Get:5 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf systemd-sysv armhf 241-7~deb10u8+rpi1 [101 kB]          
+Get:4 http://hlzmel.fsmg.org.nz/raspbian/raspbian buster/main armhf liblz4-1 armhf 1.8.3-1+deb10u1 [49.7 kB]                
+Get:8 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf libsystemd0 armhf 241-7~deb10u8+rpi1 [306 kB]           
+Get:9 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf libnss-myhostname armhf 241-7~deb10u8+rpi1 [120 kB]     
+Get:7 http://hlzmel.fsmg.org.nz/raspbian/raspbian buster/main armhf libpam-systemd armhf 241-7~deb10u8+rpi1 [194 kB]        
+Get:10 http://raspbian.mirror.geek.nz/raspbian buster/main armhf systemd armhf 241-7~deb10u8+rpi1 [3,258 kB]                
+Get:11 http://hlzmel.fsmg.org.nz/raspbian/raspbian buster/main armhf udev armhf 241-7~deb10u8+rpi1 [1,248 kB]               
+Get:12 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf libudev1 armhf 241-7~deb10u8+rpi1 [144 kB]             
+Get:13 http://archive.raspberrypi.org/debian buster/main armhf libc6 armhf 2.28-10+rpt2+rpi1 [2,356 kB]                     
+Get:14 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libnettle6 armhf 3.4.1-1+deb10u1 [223 kB]                  
+Get:16 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf libgnutls30 armhf 3.6.7-4+deb10u7 [1,049 kB]           
+Get:15 http://wlglam.fsmg.org.nz/raspbian/raspbian buster/main armhf libhogweed4 armhf 3.4.1-1+deb10u1 [130 kB]             
+Get:17 http://archive.raspberrypi.org/debian buster/main armhf libc-dev-bin armhf 2.28-10+rpt2+rpi1 [266 kB]                
+Get:18 http://archive.raspberrypi.org/debian buster/main armhf libc6-dev armhf 2.28-10+rpt2+rpi1 [2,113 kB]                 
+Get:19 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libzstd1 armhf 1.3.8+dfsg-3+rpi1+deb10u2 [197 kB]          
+Get:20 http://archive.raspberrypi.org/debian buster/main armhf linux-libc-dev armhf 1:1.20211201~buster-1 [1,012 kB]        
+Get:21 http://archive.raspberrypi.org/debian buster/main armhf libc-bin armhf 2.28-10+rpt2+rpi1 [647 kB]                    
+Get:22 http://archive.raspberrypi.org/debian buster/main armhf bluez armhf 5.50-1.2~deb10u2+rpt1 [770 kB]                   
+Get:23 http://wlglam.fsmg.org.nz/raspbian/raspbian buster/main armhf libapt-pkg5.0 armhf 1.8.2.3 [855 kB]                   
+Get:24 http://archive.raspberrypi.org/debian buster/main armhf libasound2 armhf 1.1.8-1+rpt2 [303 kB]                       
+Get:25 http://archive.raspberrypi.org/debian buster/main armhf libasound2-data all 1.1.8-1+rpt2 [60.0 kB]                   
+Get:26 http://archive.raspberrypi.org/debian buster/main armhf openssh-client armhf 1:7.9p1-10+deb10u2+rpt1 [669 kB]        
+Get:27 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf libapt-inst2.0 armhf 1.8.2.3 [200 kB]                  
+Get:28 http://archive.raspberrypi.org/debian buster/main armhf openssh-server armhf 1:7.9p1-10+deb10u2+rpt1 [291 kB]        
+Get:29 http://archive.raspberrypi.org/debian buster/main armhf openssh-sftp-server armhf 1:7.9p1-10+deb10u2+rpt1 [36.0 kB]  
+Get:30 http://archive.raspberrypi.org/debian buster/main armhf ssh all 1:7.9p1-10+deb10u2+rpt1 [202 kB]                     
+Get:31 http://archive.raspberrypi.org/debian buster/main armhf libnftnl11 armhf 1.1.7-1~bpo10+1~0 [45.1 kB]                 
+Get:32 http://archive.raspberrypi.org/debian buster/main armhf multiarch-support armhf 2.28-10+rpt2+rpi1 [215 kB]           
+Get:33 http://archive.raspberrypi.org/debian buster/main armhf libc-l10n all 2.28-10+rpt2+rpi1 [847 kB]                     
+Get:35 http://archive.raspberrypi.org/debian buster/main armhf locales all 2.28-10+rpt2+rpi1 [4,061 kB]                     
+Get:34 http://hlzmel.fsmg.org.nz/raspbian/raspbian buster/main armhf apt armhf 1.8.2.3 [1,349 kB]                           
+Get:36 http://wlglam.fsmg.org.nz/raspbian/raspbian buster/main armhf apt-utils armhf 1.8.2.3 [400 kB]                       
+Get:37 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf debconf-i18n all 1.5.71+deb10u1 [206 kB]               
+Get:38 http://archive.raspberrypi.org/debian buster/main armhf alsa-utils armhf 1.1.8-2+rpt1 [1,010 kB]                     
+Get:39 http://archive.raspberrypi.org/debian buster/main armhf firmware-atheros all 1:20190114-2+rpt4 [4,012 kB]            
+Get:40 http://wlglam.fsmg.org.nz/raspbian/raspbian buster/main armhf python3-debconf all 1.5.71+deb10u1 [4,028 B]           
+Get:41 http://raspbian.mirror.geek.nz/raspbian buster/main armhf debconf-utils all 1.5.71+deb10u1 [57.2 kB]                 
+Get:42 http://raspbian.mirror.geek.nz/raspbian buster/main armhf debconf all 1.5.71+deb10u1 [145 kB]                        
+Get:43 http://archive.raspberrypi.org/debian buster/main armhf firmware-brcm80211 all 1:20190114-2+rpt4 [4,667 kB]          
+Get:44 http://raspbian.mirror.geek.nz/raspbian buster/main armhf mariadb-common all 1:10.3.31-0+deb10u1 [32.7 kB]           
+Get:45 http://raspbian.mirror.geek.nz/raspbian buster/main armhf mariadb-client-core-10.3 armhf 1:10.3.31-0+deb10u1 [4,731 kB]
+Get:46 http://archive.raspberrypi.org/debian buster/main armhf firmware-libertas all 1:20190114-2+rpt4 [3,424 kB]           
+Get:47 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf mariadb-client-10.3 armhf 1:10.3.31-0+deb10u1 [989 kB] 
+Get:48 http://raspbian.mirror.geek.nz/raspbian buster/main armhf mariadb-server-core-10.3 armhf 1:10.3.31-0+deb10u1 [5,230 kB]
+Get:50 http://wlglam.fsmg.org.nz/raspbian/raspbian buster/main armhf mariadb-server-10.3 armhf 1:10.3.31-0+deb10u1 [3,567 kB]
+Get:49 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf psmisc armhf 23.2-1+deb10u1 [121 kB]                  
+Get:51 http://archive.raspberrypi.org/debian buster/main armhf firmware-misc-nonfree all 1:20190114-2+rpt4 [3,340 kB]       
+Get:52 http://hlzmel.fsmg.org.nz/raspbian/raspbian buster/main armhf libpython3.7 armhf 3.7.3-2+deb10u3 [1,253 kB]          
+Get:53 http://archive.raspberrypi.org/debian buster/main armhf firmware-realtek all 1:20190114-2+rpt4 [506 kB]              
+Get:54 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libpython3.7-minimal armhf 3.7.3-2+deb10u3 [583 kB]        
+Get:55 http://archive.raspberrypi.org/debian buster/main armhf libraspberrypi-doc armhf 1:1.20211201~buster-1 [31.4 MB]     
+Get:56 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libpython3.7-stdlib armhf 3.7.3-2+deb10u3 [1,664 kB]       
+Get:57 http://hlzmel.fsmg.org.nz/raspbian/raspbian buster/main armhf python3.7-minimal armhf 3.7.3-2+deb10u3 [1,464 kB]     
+Get:58 http://raspbian.mirror.geek.nz/raspbian buster/main armhf python3.7 armhf 3.7.3-2+deb10u3 [330 kB]                   
+Get:59 http://hlzmel.fsmg.org.nz/raspbian/raspbian buster/main armhf libssl1.1 armhf 1.1.1d-0+deb10u7 [1,263 kB]            
+Get:61 http://raspbian.mirror.geek.nz/raspbian buster/main armhf slapd armhf 2.4.47+dfsg-3+rpi1+deb10u6 [1,262 kB]          
+Get:63 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libldap-common all 2.4.47+dfsg-3+rpi1+deb10u6 [90.2 kB]    
+Get:60 http://hlzmel.fsmg.org.nz/raspbian/raspbian buster/main armhf libldap-2.4-2 armhf 2.4.47+dfsg-3+rpi1+deb10u6 [199 kB]
+Get:62 http://hlzmel.fsmg.org.nz/raspbian/raspbian buster/main armhf ldap-utils armhf 2.4.47+dfsg-3+rpi1+deb10u6 [178 kB]   
+Get:64 http://wlglam.fsmg.org.nz/raspbian/raspbian buster/main armhf libgcrypt20 armhf 1.8.4-5+deb10u1 [500 kB]             
+Get:65 http://raspbian.mirror.geek.nz/raspbian buster/main armhf ntfs-3g armhf 1:2017.3.23AR.3-3+deb10u1 [378 kB]           
+Get:66 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf libntfs-3g883 armhf 1:2017.3.23AR.3-3+deb10u1 [168 kB] 
+Get:67 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libk5crypto3 armhf 1.17-3+deb10u3 [117 kB]                 
+Get:68 http://wlglam.fsmg.org.nz/raspbian/raspbian buster/main armhf libkrb5support0 armhf 1.17-3+deb10u3 [62.4 kB]         
+Get:69 http://hlzmel.fsmg.org.nz/raspbian/raspbian buster/main armhf libkrb5-3 armhf 1.17-3+deb10u3 [317 kB]                
+Get:70 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libgssapi-krb5-2 armhf 1.17-3+deb10u3 [136 kB]             
+Get:71 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf tzdata all 2021a-0+deb10u3 [266 kB]                    
+Get:72 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf groff-base armhf 1.22.4-3+deb10u1 [782 kB]             
+Get:73 http://archive.raspberrypi.org/debian buster/main armhf libraspberrypi-dev armhf 1:1.20211201~buster-1 [401 kB]      
+Get:74 http://archive.raspberrypi.org/debian buster/main armhf raspberrypi-kernel armhf 1:1.20211201~buster-1 [79.8 MB]     
+Get:75 http://wlglam.fsmg.org.nz/raspbian/raspbian buster/main armhf libicu63 armhf 63.1-6+deb10u2 [7,974 kB]               
+Get:76 http://hlzmel.fsmg.org.nz/raspbian/raspbian buster/main armhf libxml2 armhf 2.9.4+dfsg1-7+deb10u2 [572 kB]           
+Get:78 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libisc1100 armhf 1:9.11.5.P4+dfsg-5.1+deb10u6 [423 kB]     
+Get:79 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf libdns1104 armhf 1:9.11.5.P4+dfsg-5.1+deb10u6 [1,075 kB]
+Get:81 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libisccfg163 armhf 1:9.11.5.P4+dfsg-5.1+deb10u6 [258 kB]   
+Get:80 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf libisccc161 armhf 1:9.11.5.P4+dfsg-5.1+deb10u6 [234 kB]
+Get:83 http://raspbian.mirror.geek.nz/raspbian buster/main armhf dnsutils armhf 1:9.11.5.P4+dfsg-5.1+deb10u6 [361 kB]       
+Get:84 http://raspbian.mirror.geek.nz/raspbian buster/main armhf bind9-host armhf 1:9.11.5.P4+dfsg-5.1+deb10u6 [269 kB]     
+Get:77 http://hlzmel.fsmg.org.nz/raspbian/raspbian buster/main armhf liblwres161 armhf 1:9.11.5.P4+dfsg-5.1+deb10u6 [247 kB]
+Get:82 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf libbind9-161 armhf 1:9.11.5.P4+dfsg-5.1+deb10u6 [244 kB]
+Get:85 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf libirs161 armhf 1:9.11.5.P4+dfsg-5.1+deb10u6 [236 kB]  
+Get:86 http://wlglam.fsmg.org.nz/raspbian/raspbian buster/main armhf apt-transport-https all 1.8.2.3 [149 kB]               
+Get:87 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libavahi-common-data armhf 0.7-4+deb10u1 [122 kB]          
+Get:88 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf libavahi-common3 armhf 0.7-4+deb10u1 [51.0 kB]         
+Get:89 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libavahi-core7 armhf 0.7-4+deb10u1 [101 kB]                
+Get:90 http://raspbian.mirror.geek.nz/raspbian buster/main armhf avahi-daemon armhf 0.7-4+deb10u1 [85.1 kB]                 
+Get:91 http://hlzmel.fsmg.org.nz/raspbian/raspbian buster/main armhf bind9utils armhf 1:9.11.5.P4+dfsg-5.1+deb10u6 [422 kB] 
+Get:92 http://wlglam.fsmg.org.nz/raspbian/raspbian buster/main armhf libcurl4 armhf 7.64.0-4+deb10u2 [294 kB]               
+Get:93 http://hlzmel.fsmg.org.nz/raspbian/raspbian buster/main armhf curl armhf 7.64.0-4+deb10u2 [254 kB]                   
+Get:94 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf distro-info-data all 0.41+deb10u4 [6,880 B]            
+Get:95 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libbsd0 armhf 0.9.1-2+deb10u1 [105 kB]                     
+Get:96 http://hlzmel.fsmg.org.nz/raspbian/raspbian buster/main armhf libcurl3-gnutls armhf 7.64.0-4+deb10u2 [292 kB]        
+Get:97 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libjs-jquery all 3.3.1~dfsg-3+deb10u1 [332 kB]             
+Get:98 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libmariadb3 armhf 1:10.3.31-0+deb10u1 [160 kB]             
+Get:99 http://raspbian.mirror.geek.nz/raspbian buster/main armhf nginx-common all 1.14.2-2+deb10u4 [121 kB]                 
+Get:100 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf libnginx-mod-http-dav-ext armhf 1.14.2-2+deb10u4 [98.9 kB]
+Get:101 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libnginx-mod-http-echo armhf 1.14.2-2+deb10u4 [102 kB]    
+Get:102 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libnginx-mod-http-fancyindex armhf 1.14.2-2+deb10u4 [97.5 kB]
+Get:103 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf libnginx-mod-http-geoip armhf 1.14.2-2+deb10u4 [93.3 kB]
+Get:104 http://wlglam.fsmg.org.nz/raspbian/raspbian buster/main armhf libnginx-mod-http-headers-more-filter armhf 1.14.2-2+deb10u4 [96.5 kB]
+Get:105 http://hlzmel.fsmg.org.nz/raspbian/raspbian buster/main armhf libnginx-mod-http-image-filter armhf 1.14.2-2+deb10u4 [96.5 kB]
+Get:106 http://wlglam.fsmg.org.nz/raspbian/raspbian buster/main armhf libnginx-mod-http-ndk armhf 1.14.2-2+deb10u4 [92.7 kB]
+Get:107 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf libnginx-mod-http-lua armhf 1.14.2-2+deb10u4 [216 kB] 
+Get:108 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libnginx-mod-http-perl armhf 1.14.2-2+deb10u4 [103 kB]    
+Get:109 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libnginx-mod-http-subs-filter armhf 1.14.2-2+deb10u4 [95.2 kB]
+Get:110 http://wlglam.fsmg.org.nz/raspbian/raspbian buster/main armhf libnginx-mod-http-uploadprogress armhf 1.14.2-2+deb10u4 [97.9 kB]
+Get:111 http://hlzmel.fsmg.org.nz/raspbian/raspbian buster/main armhf libnginx-mod-http-upstream-fair armhf 1.14.2-2+deb10u4 [95.4 kB]
+Get:112 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libnginx-mod-http-xslt-filter armhf 1.14.2-2+deb10u4 [94.9 kB]
+Get:113 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libnginx-mod-mail armhf 1.14.2-2+deb10u4 [120 kB]         
+Get:114 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf libnginx-mod-nchan armhf 1.14.2-2+deb10u4 [213 kB]    
+Get:115 http://wlglam.fsmg.org.nz/raspbian/raspbian buster/main armhf libnginx-mod-stream armhf 1.14.2-2+deb10u4 [138 kB]   
+Get:116 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf libnginx-mod-http-auth-pam armhf 1.14.2-2+deb10u4 [92.2 kB]
+Get:117 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf libnginx-mod-http-cache-purge armhf 1.14.2-2+deb10u4 [94.3 kB]
+Get:118 http://hlzmel.fsmg.org.nz/raspbian/raspbian buster/main armhf nginx-extras armhf 1.14.2-2+deb10u4 [454 kB]          
+Get:121 http://wlglam.fsmg.org.nz/raspbian/raspbian buster/main armhf libx11-data all 2:1.6.7-1+deb10u2 [299 kB]            
+Get:119 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libwebp6 armhf 0.6.1-2+deb10u1 [227 kB]                   
+Get:120 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libtiff5 armhf 4.1.0+git191117-2~deb10u3 [250 kB]         
+Get:122 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libx11-6 armhf 2:1.6.7-1+deb10u2 [689 kB]                 
+Get:123 http://raspbian.mirror.geek.nz/raspbian buster/main armhf mariadb-server all 1:10.3.31-0+deb10u1 [31.7 kB]          
+Get:124 http://wlglam.fsmg.org.nz/raspbian/raspbian buster/main armhf openssl armhf 1.1.1d-0+deb10u7 [808 kB]               
+Get:125 http://hlzmel.fsmg.org.nz/raspbian/raspbian buster/main armhf php7.3-xml armhf 7.3.31-1~deb10u1 [85.0 kB]           
+Get:126 http://raspbian.mirror.geek.nz/raspbian buster/main armhf php7.3-common armhf 7.3.31-1~deb10u1 [527 kB]             
+Get:127 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf php7.3-cli armhf 7.3.31-1~deb10u1 [1,127 kB]          
+Get:128 http://archive.raspberrypi.org/debian buster/main armhf libraspberrypi-bin armhf 1:1.20211201~buster-1 [342 kB]     
+Get:129 http://archive.raspberrypi.org/debian buster/main armhf libraspberrypi0 armhf 1:1.20211201~buster-1 [848 kB]        
+Get:130 http://archive.raspberrypi.org/debian buster/main armhf raspberrypi-bootloader armhf 1:1.20211201~buster-1 [4,525 kB]
+Get:131 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf php7.3-opcache armhf 7.3.31-1~deb10u1 [155 kB]        
+Get:132 http://raspbian.mirror.geek.nz/raspbian buster/main armhf php7.3-mysql armhf 7.3.31-1~deb10u1 [96.4 kB]             
+Get:133 http://archive.raspberrypi.org/debian buster/main armhf raspberrypi-sys-mods armhf 20211005 [12.4 kB]               
+Get:134 http://archive.raspberrypi.org/debian buster/main armhf pi-bluetooth all 0.1.18 [5,508 B]                           
+Get:135 http://archive.raspberrypi.org/debian buster/main armhf raspberrypi-net-mods all 1.3.2 [4,048 B]                    
+Get:136 http://archive.raspberrypi.org/debian buster/main armhf rpi-eeprom armhf 13.3-1~buster [1,090 kB]                   
+Get:137 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf php7.3-mbstring armhf 7.3.31-1~deb10u1 [472 kB]       
+Get:138 http://archive.raspberrypi.org/debian buster/main armhf rpi-update all 20210618 [7,920 B]                           
+Get:139 http://raspbian.mirror.geek.nz/raspbian buster/main armhf php7.3-ldap armhf 7.3.31-1~deb10u1 [24.6 kB]              
+Get:140 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf php7.3-json armhf 7.3.31-1~deb10u1 [16.2 kB]          
+Get:141 http://raspbian.mirror.geek.nz/raspbian buster/main armhf php7.3-intl armhf 7.3.31-1~deb10u1 [104 kB]               
+Get:142 http://wlglam.fsmg.org.nz/raspbian/raspbian buster/main armhf php7.3-gd armhf 7.3.31-1~deb10u1 [22.6 kB]            
+Get:143 http://hlzmel.fsmg.org.nz/raspbian/raspbian buster/main armhf php7.3-fpm armhf 7.3.31-1~deb10u1 [1,140 kB]          
+Get:144 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf php7.3-curl armhf 7.3.31-1~deb10u1 [26.8 kB]          
+Get:145 http://raspbian.mirror.geek.nz/raspbian buster/main armhf php7.3-readline armhf 7.3.31-1~deb10u1 [10.7 kB]          
+Get:146 http://raspbian.mirror.geek.nz/raspbian buster/main armhf python-dnspython all 1.16.0-1+deb10u1 [90.2 kB]           
+Get:147 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf iputils-ping armhf 3:20180629-2+deb10u2 [40.1 kB]     
+Get:148 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libisc-export1100 armhf 1:9.11.5.P4+dfsg-5.1+deb10u6 [360 kB]
+Get:149 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf libdns-export1104 armhf 1:9.11.5.P4+dfsg-5.1+deb10u6 [874 kB]
+Get:150 http://wlglam.fsmg.org.nz/raspbian/raspbian buster/main armhf isc-dhcp-client armhf 4.4.1-2+deb10u1 [295 kB]        
+Get:151 http://raspbian.mirror.geek.nz/raspbian buster/main armhf isc-dhcp-common armhf 4.4.1-2+deb10u1 [144 kB]            
+Get:152 http://raspbian.mirror.geek.nz/raspbian buster/main armhf klibc-utils armhf 2.0.6-1+rpi1+deb10u1 [87.1 kB]          
+Get:153 http://mirror.reap.net.nz/raspbian/raspbian buster/main armhf libklibc armhf 2.0.6-1+rpi1+deb10u1 [52.8 kB]         
+Get:154 http://raspbian.mirror.geek.nz/raspbian buster/main armhf libjs-underscore all 1.9.1~dfsg-1+deb10u1 [100.0 kB]      
+Get:155 http://hlzmel.fsmg.org.nz/raspbian/raspbian buster/main armhf php-pear all 1:1.10.6+submodules+notgz-1.1+deb10u2 [285 kB]
+Get:156 http://wlglam.fsmg.org.nz/raspbian/raspbian buster/main armhf wpasupplicant armhf 2:2.7+git20190128+0c1e29f-6+deb10u3 [1,008 kB]
+Fetched 224 MB in 1min 23s (2,702 kB/s)                                                                                     
+Reading changelogs... Done
+Extracting templates from packages: 100%
+Preconfiguring packages ...
+(Reading database ... 52724 files and directories currently installed.)
+Preparing to unpack .../base-files_10.3+rpi1+deb10u11_armhf.deb ...
+Unpacking base-files (10.3+rpi1+deb10u11) over (10.3+rpi1+deb10u8) ...
+Setting up base-files (10.3+rpi1+deb10u11) ...
+Installing new version of config file /etc/debian_version ...
+(Reading database ... 52724 files and directories currently installed.)
+Preparing to unpack .../libc6-dbg_2.28-10+rpt2+rpi1_armhf.deb ...
+Unpacking libc6-dbg:armhf (2.28-10+rpt2+rpi1) over (2.28-10+rpi1) ...
+Preparing to unpack .../libc6_2.28-10+rpt2+rpi1_armhf.deb ...
+Unpacking libc6:armhf (2.28-10+rpt2+rpi1) over (2.28-10+rpi1) ...
+Setting up libc6:armhf (2.28-10+rpt2+rpi1) ...
+(Reading database ... 52722 files and directories currently installed.)
+Preparing to unpack .../libc-dev-bin_2.28-10+rpt2+rpi1_armhf.deb ...
+Unpacking libc-dev-bin (2.28-10+rpt2+rpi1) over (2.28-10+rpi1) ...
+Setting up libc-dev-bin (2.28-10+rpt2+rpi1) ...
+(Reading database ... 52722 files and directories currently installed.)
+Preparing to unpack .../libc6-dev_2.28-10+rpt2+rpi1_armhf.deb ...
+Unpacking libc6-dev:armhf (2.28-10+rpt2+rpi1) over (2.28-10+rpi1) ...
+Setting up libc6-dev:armhf (2.28-10+rpt2+rpi1) ...
+(Reading database ... 52722 files and directories currently installed.)
+Preparing to unpack .../linux-libc-dev_1%3a1.20211201~buster-1_armhf.deb ...
+Unpacking linux-libc-dev:armhf (1:1.20211201~buster-1) over (4.18.20-2+rpi1) ...
+Setting up linux-libc-dev:armhf (1:1.20211201~buster-1) ...
+(Reading database ... 52765 files and directories currently installed.)
+Preparing to unpack .../libc-bin_2.28-10+rpt2+rpi1_armhf.deb ...
+Unpacking libc-bin (2.28-10+rpt2+rpi1) over (2.28-10+rpi1) ...
+Setting up libc-bin (2.28-10+rpt2+rpi1) ...
+(Reading database ... 52765 files and directories currently installed.)
+Preparing to unpack .../liblz4-1_1.8.3-1+deb10u1_armhf.deb ...
+Unpacking liblz4-1:armhf (1.8.3-1+deb10u1) over (1.8.3-1) ...
+Setting up liblz4-1:armhf (1.8.3-1+deb10u1) ...
+(Reading database ... 52765 files and directories currently installed.)
+Preparing to unpack .../systemd-sysv_241-7~deb10u8+rpi1_armhf.deb ...
+Unpacking systemd-sysv (241-7~deb10u8+rpi1) over (241-7~deb10u6+rpi1) ...
+Preparing to unpack .../libpam-systemd_241-7~deb10u8+rpi1_armhf.deb ...
+Unpacking libpam-systemd:armhf (241-7~deb10u8+rpi1) over (241-7~deb10u6+rpi1) ...
+Preparing to unpack .../libsystemd0_241-7~deb10u8+rpi1_armhf.deb ...
+Unpacking libsystemd0:armhf (241-7~deb10u8+rpi1) over (241-7~deb10u6+rpi1) ...
+Setting up libsystemd0:armhf (241-7~deb10u8+rpi1) ...
+(Reading database ... 52765 files and directories currently installed.)
+Preparing to unpack .../libnss-myhostname_241-7~deb10u8+rpi1_armhf.deb ...
+Unpacking libnss-myhostname:armhf (241-7~deb10u8+rpi1) over (241-7~deb10u6+rpi1) ...
+Setting up libnss-myhostname:armhf (241-7~deb10u8+rpi1) ...
+(Reading database ... 52765 files and directories currently installed.)
+Preparing to unpack .../systemd_241-7~deb10u8+rpi1_armhf.deb ...
+Unpacking systemd (241-7~deb10u8+rpi1) over (241-7~deb10u6+rpi1) ...
+Preparing to unpack .../bluez_5.50-1.2~deb10u2+rpt1_armhf.deb ...
+Unpacking bluez (5.50-1.2~deb10u2+rpt1) over (5.50-1.2~deb10u1+rpt2) ...
+Preparing to unpack .../udev_241-7~deb10u8+rpi1_armhf.deb ...
+Unpacking udev (241-7~deb10u8+rpi1) over (241-7~deb10u6+rpi1) ...
+Preparing to unpack .../libudev1_241-7~deb10u8+rpi1_armhf.deb ...
+Unpacking libudev1:armhf (241-7~deb10u8+rpi1) over (241-7~deb10u6+rpi1) ...
+W: Operation was interrupted before it could finish
+W: APT had planned for dpkg to do more than it reported back (52 vs 627).
+   Affected packages: alsa-utils:armhf apt-transport-https:armhf apt-utils:armhf apt:armhf avahi-daemon:armhf bind9-host:armhf bind9utils:armhf bluez:armhf curl:armhf debconf-i18n:armhf debconf-utils:armhf debconf:armhf distro-info-data:armhf dnsutils:armhf firmware-atheros:armhf firmware-brcm80211:armhf firmware-libertas:armhf firmware-misc-nonfree:armhf firmware-realtek:armhf groff-base:armhf iputils-ping:armhf isc-dhcp-client:armhf isc-dhcp-common:armhf klibc-utils:armhf ldap-utils:armhf libapt-inst2.0:armhf libapt-pkg5.0:armhf libasound2-data:armhf libasound2:armhf libavahi-common-data:armhf libavahi-common3:armhf libavahi-core7:armhf libbind9-161:armhf libbsd0:armhf libc-bin:armhf libc-l10n:armhf libc6-dbg:armhf libcurl3-gnutls:armhf libcurl4:armhf libdns-export1104:armhf libdns1104:armhf libgcrypt20:armhf libgnutls30:armhf libgssapi-krb5-2:armhf libhogweed4:armhf libicu63:armhf libirs161:armhf libisc-export1100:armhf libisc1100:armhf libisccc161:armhf libisccfg163:armhf libjs-jquery:armhf libjs-underscore:armhf libk5crypto3:armhf libklibc:armhf libkrb5-3:armhf libkrb5support0:armhf libldap-2.4-2:armhf libldap-common:armhf liblwres161:armhf libmariadb3:armhf libnettle6:armhf libnftnl11:armhf libnginx-mod-http-auth-pam:armhf libnginx-mod-http-cache-purge:armhf libnginx-mod-http-dav-ext:armhf libnginx-mod-http-echo:armhf libnginx-mod-http-fancyindex:armhf libnginx-mod-http-geoip:armhf libnginx-mod-http-headers-more-filter:armhf libnginx-mod-http-image-filter:armhf libnginx-mod-http-lua:armhf libnginx-mod-http-ndk:armhf libnginx-mod-http-perl:armhf libnginx-mod-http-subs-filter:armhf libnginx-mod-http-uploadprogress:armhf libnginx-mod-http-upstream-fair:armhf libnginx-mod-http-xslt-filter:armhf libnginx-mod-mail:armhf libnginx-mod-nchan:armhf libnginx-mod-stream:armhf libntfs-3g883:armhf libpam-systemd:armhf libpython3.7-minimal:armhf libpython3.7-stdlib:armhf libpython3.7:armhf libraspberrypi-bin:armhf libraspberrypi-dev:armhf libraspberrypi-doc:armhf libraspberrypi0:armhf libssl1.1:armhf libtiff5:armhf libwebp6:armhf libx11-6:armhf libx11-data:armhf libxml2:armhf libzstd1:armhf locales:armhf mariadb-client-10.3:armhf mariadb-client-core-10.3:armhf mariadb-common:armhf mariadb-server-10.3:armhf mariadb-server-core-10.3:armhf mariadb-server:armhf metronome:armhf multiarch-support:armhf nginx-common:armhf nginx-extras:armhf ntfs-3g:armhf openssh-client:armhf openssh-server:armhf openssh-sftp-server:armhf openssl:armhf php-pear:armhf php7.3-cli:armhf php7.3-common:armhf php7.3-curl:armhf php7.3-fpm:armhf php7.3-gd:armhf php7.3-intl:armhf php7.3-json:armhf php7.3-ldap:armhf php7.3-mbstring:armhf php7.3-mysql:armhf php7.3-opcache:armhf php7.3-readline:armhf php7.3-xml:armhf pi-bluetooth:armhf psmisc:armhf python-dnspython:armhf python3-debconf:armhf python3.7-minimal:armhf python3.7:armhf raspberrypi-bootloader:armhf raspberrypi-kernel:armhf raspberrypi-net-mods:armhf raspberrypi-sys-mods:armhf rpi-eeprom:armhf rpi-update:armhf slapd:armhf ssh:armhf ssowat:armhf systemd-sysv:armhf systemd:armhf tzdata:armhf udev:armhf wpasupplicant:armhf
+root@yunohost:~# sudo apt-get update && sudo apt-get upgrade
+Hit:1 http://raspbian.raspberrypi.org/raspbian buster InRelease                                                             
+Hit:2 http://archive.raspberrypi.org/debian buster InRelease                                                                
+Hit:3 http://forge.yunohost.org/debian buster InRelease
+Reading package lists... Done
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+Calculating upgrade... Done
+The following packages have been kept back:
+  moulinette redis-server redis-tools yunohost yunohost-admin
+The following packages will be upgraded:
+  alsa-utils apt apt-transport-https apt-utils avahi-daemon bind9-host bind9utils curl debconf debconf-i18n debconf-utils
+  distro-info-data dnsutils firmware-atheros firmware-brcm80211 firmware-libertas firmware-misc-nonfree firmware-realtek
+  groff-base iputils-ping isc-dhcp-client isc-dhcp-common klibc-utils ldap-utils libapt-inst2.0 libapt-pkg5.0 libasound2
+  libasound2-data libavahi-common-data libavahi-common3 libavahi-core7 libbind9-161 libbsd0 libc-l10n libcurl3-gnutls
+  libcurl4 libdns-export1104 libdns1104 libgcrypt20 libgnutls30 libgssapi-krb5-2 libhogweed4 libicu63 libirs161
+  libisc-export1100 libisc1100 libisccc161 libisccfg163 libjs-jquery libjs-underscore libk5crypto3 libklibc libkrb5-3
+  libkrb5support0 libldap-2.4-2 libldap-common liblwres161 libmariadb3 libnettle6 libnftnl11 libnginx-mod-http-auth-pam
+  libnginx-mod-http-cache-purge libnginx-mod-http-dav-ext libnginx-mod-http-echo libnginx-mod-http-fancyindex
+  libnginx-mod-http-geoip libnginx-mod-http-headers-more-filter libnginx-mod-http-image-filter libnginx-mod-http-lua
+  libnginx-mod-http-ndk libnginx-mod-http-perl libnginx-mod-http-subs-filter libnginx-mod-http-uploadprogress
+  libnginx-mod-http-upstream-fair libnginx-mod-http-xslt-filter libnginx-mod-mail libnginx-mod-nchan libnginx-mod-stream
+  libntfs-3g883 libpython3.7 libpython3.7-minimal libpython3.7-stdlib libraspberrypi-bin libraspberrypi-dev
+  libraspberrypi-doc libraspberrypi0 libssl1.1 libtiff5 libwebp6 libx11-6 libx11-data libxml2 libzstd1 locales
+  mariadb-client-10.3 mariadb-client-core-10.3 mariadb-common mariadb-server mariadb-server-10.3 mariadb-server-core-10.3
+  metronome multiarch-support nginx-common nginx-extras ntfs-3g openssh-client openssh-server openssh-sftp-server openssl
+  php-pear php7.3-cli php7.3-common php7.3-curl php7.3-fpm php7.3-gd php7.3-intl php7.3-json php7.3-ldap php7.3-mbstring
+  php7.3-mysql php7.3-opcache php7.3-readline php7.3-xml pi-bluetooth psmisc python-dnspython python3-debconf python3.7
+  python3.7-minimal raspberrypi-bootloader raspberrypi-kernel raspberrypi-net-mods raspberrypi-sys-mods rpi-eeprom
+  rpi-update slapd ssh ssowat tzdata wpasupplicant
+140 upgraded, 0 newly installed, 0 to remove and 5 not upgraded.
+6 not fully installed or removed.
+Need to get 0 B/200 MB of archives.
+After this operation, 18.9 MB of additional disk space will be used.
+Do you want to continue? [Y/n] y
+Reading changelogs... Done
+Extracting templates from packages: 100%
+Preconfiguring packages ...
+(Reading database ... 52765 files and directories currently installed.)
+Preparing to unpack .../libasound2_1.1.8-1+rpt2_armhf.deb ...
+Unpacking libasound2:armhf (1.1.8-1+rpt2) over (1.1.8-1+rpt1) ...
+Preparing to unpack .../libasound2-data_1.1.8-1+rpt2_all.deb ...
+Unpacking libasound2-data (1.1.8-1+rpt2) over (1.1.8-1+rpt1) ...
+Setting up systemd (241-7~deb10u8+rpi1) ...
+(Reading database ... 52765 files and directories currently installed.)
+Preparing to unpack .../libnettle6_3.4.1-1+deb10u1_armhf.deb ...
+Unpacking libnettle6:armhf (3.4.1-1+deb10u1) over (3.4.1-1) ...
+Setting up libnettle6:armhf (3.4.1-1+deb10u1) ...
+(Reading database ... 52765 files and directories currently installed.)
+Preparing to unpack .../libhogweed4_3.4.1-1+deb10u1_armhf.deb ...
+Unpacking libhogweed4:armhf (3.4.1-1+deb10u1) over (3.4.1-1) ...
+Setting up libhogweed4:armhf (3.4.1-1+deb10u1) ...
+(Reading database ... 52765 files and directories currently installed.)
+Preparing to unpack .../libgnutls30_3.6.7-4+deb10u7_armhf.deb ...
+Unpacking libgnutls30:armhf (3.6.7-4+deb10u7) over (3.6.7-4+deb10u6) ...
+Setting up libgnutls30:armhf (3.6.7-4+deb10u7) ...
+(Reading database ... 52765 files and directories currently installed.)
+Preparing to unpack .../libzstd1_1.3.8+dfsg-3+rpi1+deb10u2_armhf.deb ...
+Unpacking libzstd1:armhf (1.3.8+dfsg-3+rpi1+deb10u2) over (1.3.8+dfsg-3+rpi1+deb10u1) ...
+Setting up libzstd1:armhf (1.3.8+dfsg-3+rpi1+deb10u2) ...
+(Reading database ... 52765 files and directories currently installed.)
+Preparing to unpack .../libapt-pkg5.0_1.8.2.3_armhf.deb ...
+Unpacking libapt-pkg5.0:armhf (1.8.2.3) over (1.8.2.2) ...
+Setting up libapt-pkg5.0:armhf (1.8.2.3) ...
+(Reading database ... 52765 files and directories currently installed.)
+Preparing to unpack .../libapt-inst2.0_1.8.2.3_armhf.deb ...
+Unpacking libapt-inst2.0:armhf (1.8.2.3) over (1.8.2.2) ...
+Setting up libapt-inst2.0:armhf (1.8.2.3) ...
+(Reading database ... 52765 files and directories currently installed.)
+Preparing to unpack .../archives/apt_1.8.2.3_armhf.deb ...
+Unpacking apt (1.8.2.3) over (1.8.2.2) ...
+Setting up apt (1.8.2.3) ...
+(Reading database ... 52765 files and directories currently installed.)
+Preparing to unpack .../apt-utils_1.8.2.3_armhf.deb ...
+Unpacking apt-utils (1.8.2.3) over (1.8.2.2) ...
+Setting up apt-utils (1.8.2.3) ...
+(Reading database ... 52765 files and directories currently installed.)
+Preparing to unpack .../debconf-i18n_1.5.71+deb10u1_all.deb ...
+Unpacking debconf-i18n (1.5.71+deb10u1) over (1.5.71) ...
+Preparing to unpack .../python3-debconf_1.5.71+deb10u1_all.deb ...
+Unpacking python3-debconf (1.5.71+deb10u1) over (1.5.71) ...
+Preparing to unpack .../debconf-utils_1.5.71+deb10u1_all.deb ...
+Unpacking debconf-utils (1.5.71+deb10u1) over (1.5.71) ...
+Preparing to unpack .../debconf_1.5.71+deb10u1_all.deb ...
+Unpacking debconf (1.5.71+deb10u1) over (1.5.71) ...
+Setting up debconf (1.5.71+deb10u1) ...
+(Reading database ... 52765 files and directories currently installed.)
+Preparing to unpack .../mariadb-common_1%3a10.3.31-0+deb10u1_all.deb ...
+Unpacking mariadb-common (1:10.3.31-0+deb10u1) over (1:10.3.27-0+deb10u1) ...
+Setting up mariadb-common (1:10.3.31-0+deb10u1) ...
+(Reading database ... 52765 files and directories currently installed.)
+Preparing to unpack .../mariadb-client-core-10.3_1%3a10.3.31-0+deb10u1_armhf.deb ...
+Unpacking mariadb-client-core-10.3 (1:10.3.31-0+deb10u1) over (1:10.3.27-0+deb10u1) ...
+Setting up mariadb-client-core-10.3 (1:10.3.31-0+deb10u1) ...
+(Reading database ... 52765 files and directories currently installed.)
+Preparing to unpack .../mariadb-client-10.3_1%3a10.3.31-0+deb10u1_armhf.deb ...
+Unpacking mariadb-client-10.3 (1:10.3.31-0+deb10u1) over (1:10.3.27-0+deb10u1) ...
+Setting up mariadb-client-10.3 (1:10.3.31-0+deb10u1) ...
+(Reading database ... 52765 files and directories currently installed.)
+Preparing to unpack .../mariadb-server-core-10.3_1%3a10.3.31-0+deb10u1_armhf.deb ...
+Unpacking mariadb-server-core-10.3 (1:10.3.31-0+deb10u1) over (1:10.3.27-0+deb10u1) ...
+Setting up mariadb-server-core-10.3 (1:10.3.31-0+deb10u1) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../psmisc_23.2-1+deb10u1_armhf.deb ...
+Unpacking psmisc (23.2-1+deb10u1) over (23.2-1) ...
+Setting up psmisc (23.2-1+deb10u1) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../mariadb-server-10.3_1%3a10.3.31-0+deb10u1_armhf.deb ...
+/var/lib/mysql: found previous version 10.3
+Unpacking mariadb-server-10.3 (1:10.3.31-0+deb10u1) over (1:10.3.27-0+deb10u1) ...
+Setting up mariadb-server-10.3 (1:10.3.31-0+deb10u1) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../libpython3.7_3.7.3-2+deb10u3_armhf.deb ...
+Unpacking libpython3.7:armhf (3.7.3-2+deb10u3) over (3.7.3-2+deb10u2) ...
+Preparing to unpack .../libpython3.7-minimal_3.7.3-2+deb10u3_armhf.deb ...
+Unpacking libpython3.7-minimal:armhf (3.7.3-2+deb10u3) over (3.7.3-2+deb10u2) ...
+Setting up libpython3.7-minimal:armhf (3.7.3-2+deb10u3) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../libpython3.7-stdlib_3.7.3-2+deb10u3_armhf.deb ...
+Unpacking libpython3.7-stdlib:armhf (3.7.3-2+deb10u3) over (3.7.3-2+deb10u2) ...
+Setting up libpython3.7-stdlib:armhf (3.7.3-2+deb10u3) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../python3.7-minimal_3.7.3-2+deb10u3_armhf.deb ...
+Unpacking python3.7-minimal (3.7.3-2+deb10u3) over (3.7.3-2+deb10u2) ...
+Setting up python3.7-minimal (3.7.3-2+deb10u3) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../python3.7_3.7.3-2+deb10u3_armhf.deb ...
+Unpacking python3.7 (3.7.3-2+deb10u3) over (3.7.3-2+deb10u2) ...
+Setting up python3.7 (3.7.3-2+deb10u3) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../libssl1.1_1.1.1d-0+deb10u7_armhf.deb ...
+Unpacking libssl1.1:armhf (1.1.1d-0+deb10u7) over (1.1.1d-0+deb10u5+rpt1) ...
+Setting up libssl1.1:armhf (1.1.1d-0+deb10u7) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../libldap-2.4-2_2.4.47+dfsg-3+rpi1+deb10u6_armhf.deb ...
+Unpacking libldap-2.4-2:armhf (2.4.47+dfsg-3+rpi1+deb10u6) over (2.4.47+dfsg-3+rpi1+deb10u5) ...
+Setting up libldap-2.4-2:armhf (2.4.47+dfsg-3+rpi1+deb10u6) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../slapd_2.4.47+dfsg-3+rpi1+deb10u6_armhf.deb ...
+Unpacking slapd (2.4.47+dfsg-3+rpi1+deb10u6) over (2.4.47+dfsg-3+rpi1+deb10u5) ...
+Setting up slapd (2.4.47+dfsg-3+rpi1+deb10u6) ...
+  Backing up /etc/ldap/slapd.d in /var/backups/slapd-2.4.47+dfsg-3+rpi1+deb10u5... done.
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../ldap-utils_2.4.47+dfsg-3+rpi1+deb10u6_armhf.deb ...
+Unpacking ldap-utils (2.4.47+dfsg-3+rpi1+deb10u6) over (2.4.47+dfsg-3+rpi1+deb10u5) ...
+Setting up ldap-utils (2.4.47+dfsg-3+rpi1+deb10u6) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../libldap-common_2.4.47+dfsg-3+rpi1+deb10u6_all.deb ...
+Unpacking libldap-common (2.4.47+dfsg-3+rpi1+deb10u6) over (2.4.47+dfsg-3+rpi1+deb10u5) ...
+Setting up libldap-common (2.4.47+dfsg-3+rpi1+deb10u6) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../libgcrypt20_1.8.4-5+deb10u1_armhf.deb ...
+Unpacking libgcrypt20:armhf (1.8.4-5+deb10u1) over (1.8.4-5) ...
+Setting up libgcrypt20:armhf (1.8.4-5+deb10u1) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../ntfs-3g_1%3a2017.3.23AR.3-3+deb10u1_armhf.deb ...
+Unpacking ntfs-3g (1:2017.3.23AR.3-3+deb10u1) over (1:2017.3.23AR.3-3) ...
+Preparing to unpack .../libntfs-3g883_1%3a2017.3.23AR.3-3+deb10u1_armhf.deb ...
+Unpacking libntfs-3g883 (1:2017.3.23AR.3-3+deb10u1) over (1:2017.3.23AR.3-3) ...
+Preparing to unpack .../openssh-client_1%3a7.9p1-10+deb10u2+rpt1_armhf.deb ...
+Unpacking openssh-client (1:7.9p1-10+deb10u2+rpt1) over (1:7.9p1-10+deb10u2) ...
+Setting up openssh-client (1:7.9p1-10+deb10u2+rpt1) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../openssh-server_1%3a7.9p1-10+deb10u2+rpt1_armhf.deb ...
+Unpacking openssh-server (1:7.9p1-10+deb10u2+rpt1) over (1:7.9p1-10+deb10u2) ...
+Setting up openssh-server (1:7.9p1-10+deb10u2+rpt1) ...
+rescue-ssh.target is a disabled or a static unit, not starting it.
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../openssh-sftp-server_1%3a7.9p1-10+deb10u2+rpt1_armhf.deb ...
+Unpacking openssh-sftp-server (1:7.9p1-10+deb10u2+rpt1) over (1:7.9p1-10+deb10u2) ...
+Setting up openssh-sftp-server (1:7.9p1-10+deb10u2+rpt1) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../libk5crypto3_1.17-3+deb10u3_armhf.deb ...
+Unpacking libk5crypto3:armhf (1.17-3+deb10u3) over (1.17-3+deb10u1) ...
+Setting up libk5crypto3:armhf (1.17-3+deb10u3) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../libkrb5support0_1.17-3+deb10u3_armhf.deb ...
+Unpacking libkrb5support0:armhf (1.17-3+deb10u3) over (1.17-3+deb10u1) ...
+Setting up libkrb5support0:armhf (1.17-3+deb10u3) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../libkrb5-3_1.17-3+deb10u3_armhf.deb ...
+Unpacking libkrb5-3:armhf (1.17-3+deb10u3) over (1.17-3+deb10u1) ...
+Setting up libkrb5-3:armhf (1.17-3+deb10u3) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../libgssapi-krb5-2_1.17-3+deb10u3_armhf.deb ...
+Unpacking libgssapi-krb5-2:armhf (1.17-3+deb10u3) over (1.17-3+deb10u1) ...
+Setting up libgssapi-krb5-2:armhf (1.17-3+deb10u3) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../ssh_1%3a7.9p1-10+deb10u2+rpt1_all.deb ...
+Unpacking ssh (1:7.9p1-10+deb10u2+rpt1) over (1:7.9p1-10+deb10u2) ...
+Preparing to unpack .../tzdata_2021a-0+deb10u3_all.deb ...
+Unpacking tzdata (2021a-0+deb10u3) over (2021a-0+deb10u1) ...
+Setting up tzdata (2021a-0+deb10u3) ...
+
+Current default time zone: 'Europe/London'
+Local time is now:      Tue Jan 18 01:42:05 GMT 2022.
+Universal Time is now:  Tue Jan 18 01:42:05 UTC 2022.
+Run 'dpkg-reconfigure tzdata' if you wish to change it.
+
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../groff-base_1.22.4-3+deb10u1_armhf.deb ...
+Unpacking groff-base (1.22.4-3+deb10u1) over (1.22.4-3) ...
+Setting up groff-base (1.22.4-3+deb10u1) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../libicu63_63.1-6+deb10u2_armhf.deb ...
+Unpacking libicu63:armhf (63.1-6+deb10u2) over (63.1-6+deb10u1) ...
+Setting up libicu63:armhf (63.1-6+deb10u2) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../libxml2_2.9.4+dfsg1-7+deb10u2_armhf.deb ...
+Unpacking libxml2:armhf (2.9.4+dfsg1-7+deb10u2) over (2.9.4+dfsg1-7+deb10u1) ...
+Setting up libxml2:armhf (2.9.4+dfsg1-7+deb10u2) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../liblwres161_1%3a9.11.5.P4+dfsg-5.1+deb10u6_armhf.deb ...
+Unpacking liblwres161:armhf (1:9.11.5.P4+dfsg-5.1+deb10u6) over (1:9.11.5.P4+dfsg-5.1+deb10u3) ...
+Setting up liblwres161:armhf (1:9.11.5.P4+dfsg-5.1+deb10u6) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../libisc1100_1%3a9.11.5.P4+dfsg-5.1+deb10u6_armhf.deb ...
+Unpacking libisc1100:armhf (1:9.11.5.P4+dfsg-5.1+deb10u6) over (1:9.11.5.P4+dfsg-5.1+deb10u3) ...
+Setting up libisc1100:armhf (1:9.11.5.P4+dfsg-5.1+deb10u6) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../libdns1104_1%3a9.11.5.P4+dfsg-5.1+deb10u6_armhf.deb ...
+Unpacking libdns1104:armhf (1:9.11.5.P4+dfsg-5.1+deb10u6) over (1:9.11.5.P4+dfsg-5.1+deb10u3) ...
+Setting up libdns1104:armhf (1:9.11.5.P4+dfsg-5.1+deb10u6) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../libisccc161_1%3a9.11.5.P4+dfsg-5.1+deb10u6_armhf.deb ...
+Unpacking libisccc161:armhf (1:9.11.5.P4+dfsg-5.1+deb10u6) over (1:9.11.5.P4+dfsg-5.1+deb10u3) ...
+Setting up libisccc161:armhf (1:9.11.5.P4+dfsg-5.1+deb10u6) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../libisccfg163_1%3a9.11.5.P4+dfsg-5.1+deb10u6_armhf.deb ...
+Unpacking libisccfg163:armhf (1:9.11.5.P4+dfsg-5.1+deb10u6) over (1:9.11.5.P4+dfsg-5.1+deb10u3) ...
+Setting up libisccfg163:armhf (1:9.11.5.P4+dfsg-5.1+deb10u6) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../libbind9-161_1%3a9.11.5.P4+dfsg-5.1+deb10u6_armhf.deb ...
+Unpacking libbind9-161:armhf (1:9.11.5.P4+dfsg-5.1+deb10u6) over (1:9.11.5.P4+dfsg-5.1+deb10u3) ...
+Setting up libbind9-161:armhf (1:9.11.5.P4+dfsg-5.1+deb10u6) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../dnsutils_1%3a9.11.5.P4+dfsg-5.1+deb10u6_armhf.deb ...
+Unpacking dnsutils (1:9.11.5.P4+dfsg-5.1+deb10u6) over (1:9.11.5.P4+dfsg-5.1+deb10u3) ...
+Setting up dnsutils (1:9.11.5.P4+dfsg-5.1+deb10u6) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../bind9-host_1%3a9.11.5.P4+dfsg-5.1+deb10u6_armhf.deb ...
+Unpacking bind9-host (1:9.11.5.P4+dfsg-5.1+deb10u6) over (1:9.11.5.P4+dfsg-5.1+deb10u3) ...
+Setting up bind9-host (1:9.11.5.P4+dfsg-5.1+deb10u6) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../libirs161_1%3a9.11.5.P4+dfsg-5.1+deb10u6_armhf.deb ...
+Unpacking libirs161:armhf (1:9.11.5.P4+dfsg-5.1+deb10u6) over (1:9.11.5.P4+dfsg-5.1+deb10u3) ...
+Setting up libirs161:armhf (1:9.11.5.P4+dfsg-5.1+deb10u6) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../apt-transport-https_1.8.2.3_all.deb ...
+Unpacking apt-transport-https (1.8.2.3) over (1.8.2.2) ...
+Setting up apt-transport-https (1.8.2.3) ...
+(Reading database ... 52764 files and directories currently installed.)
+Preparing to unpack .../libavahi-common-data_0.7-4+deb10u1_armhf.deb ...
+Unpacking libavahi-common-data:armhf (0.7-4+deb10u1) over (0.7-4+b1) ...
+Setting up libavahi-common-data:armhf (0.7-4+deb10u1) ...
+(Reading database ... 52763 files and directories currently installed.)
+Preparing to unpack .../libavahi-common3_0.7-4+deb10u1_armhf.deb ...
+Unpacking libavahi-common3:armhf (0.7-4+deb10u1) over (0.7-4+b1) ...
+Setting up libavahi-common3:armhf (0.7-4+deb10u1) ...
+(Reading database ... 52762 files and directories currently installed.)
+Preparing to unpack .../libavahi-core7_0.7-4+deb10u1_armhf.deb ...
+Unpacking libavahi-core7:armhf (0.7-4+deb10u1) over (0.7-4+b1) ...
+Setting up libavahi-core7:armhf (0.7-4+deb10u1) ...
+(Reading database ... 52761 files and directories currently installed.)
+Preparing to unpack .../avahi-daemon_0.7-4+deb10u1_armhf.deb ...
+Unpacking avahi-daemon (0.7-4+deb10u1) over (0.7-4+b1) ...
+Setting up avahi-daemon (0.7-4+deb10u1) ...
+Removing obsolete conffile /etc/network/if-up.d/avahi-daemon ...
+Removing obsolete conffile /etc/resolvconf/update-libc.d/avahi-daemon ...
+(Reading database ... 52755 files and directories currently installed.)
+Preparing to unpack .../bind9utils_1%3a9.11.5.P4+dfsg-5.1+deb10u6_armhf.deb ...
+Unpacking bind9utils (1:9.11.5.P4+dfsg-5.1+deb10u6) over (1:9.11.5.P4+dfsg-5.1+deb10u3) ...
+Setting up bind9utils (1:9.11.5.P4+dfsg-5.1+deb10u6) ...
+(Reading database ... 52755 files and directories currently installed.)
+Preparing to unpack .../libcurl4_7.64.0-4+deb10u2_armhf.deb ...
+Unpacking libcurl4:armhf (7.64.0-4+deb10u2) over (7.64.0-4+deb10u1) ...
+Setting up libcurl4:armhf (7.64.0-4+deb10u2) ...
+(Reading database ... 52755 files and directories currently installed.)
+Preparing to unpack .../curl_7.64.0-4+deb10u2_armhf.deb ...
+Unpacking curl (7.64.0-4+deb10u2) over (7.64.0-4+deb10u1) ...
+Setting up curl (7.64.0-4+deb10u2) ...
+(Reading database ... 52755 files and directories currently installed.)
+Preparing to unpack .../distro-info-data_0.41+deb10u4_all.deb ...
+Unpacking distro-info-data (0.41+deb10u4) over (0.41+deb10u3) ...
+Setting up distro-info-data (0.41+deb10u4) ...
+(Reading database ... 52755 files and directories currently installed.)
+Preparing to unpack .../libbsd0_0.9.1-2+deb10u1_armhf.deb ...
+Unpacking libbsd0:armhf (0.9.1-2+deb10u1) over (0.9.1-2) ...
+Setting up libbsd0:armhf (0.9.1-2+deb10u1) ...
+(Reading database ... 52755 files and directories currently installed.)
+Preparing to unpack .../libcurl3-gnutls_7.64.0-4+deb10u2_armhf.deb ...
+Unpacking libcurl3-gnutls:armhf (7.64.0-4+deb10u2) over (7.64.0-4+deb10u1) ...
+Setting up libcurl3-gnutls:armhf (7.64.0-4+deb10u2) ...
+(Reading database ... 52755 files and directories currently installed.)
+Preparing to unpack .../libjs-jquery_3.3.1~dfsg-3+deb10u1_all.deb ...
+Unpacking libjs-jquery (3.3.1~dfsg-3+deb10u1) over (3.3.1~dfsg-3) ...
+Setting up libjs-jquery (3.3.1~dfsg-3+deb10u1) ...
+(Reading database ... 52755 files and directories currently installed.)
+Preparing to unpack .../libmariadb3_1%3a10.3.31-0+deb10u1_armhf.deb ...
+Unpacking libmariadb3:armhf (1:10.3.31-0+deb10u1) over (1:10.3.27-0+deb10u1) ...
+Setting up libmariadb3:armhf (1:10.3.31-0+deb10u1) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../libnftnl11_1.1.7-1~bpo10+1~0_armhf.deb ...
+Unpacking libnftnl11:armhf (1.1.7-1~bpo10+1~0) over (1.1.2-2) ...
+Setting up libnftnl11:armhf (1.1.7-1~bpo10+1~0) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../nginx-common_1.14.2-2+deb10u4_all.deb ...
+Unpacking nginx-common (1.14.2-2+deb10u4) over (1.14.2-2+deb10u3) ...
+Setting up nginx-common (1.14.2-2+deb10u4) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../libnginx-mod-http-dav-ext_1.14.2-2+deb10u4_armhf.deb ...
+Unpacking libnginx-mod-http-dav-ext (1.14.2-2+deb10u4) over (1.14.2-2+deb10u3) ...
+Setting up libnginx-mod-http-dav-ext (1.14.2-2+deb10u4) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../libnginx-mod-http-echo_1.14.2-2+deb10u4_armhf.deb ...
+Unpacking libnginx-mod-http-echo (1.14.2-2+deb10u4) over (1.14.2-2+deb10u3) ...
+Setting up libnginx-mod-http-echo (1.14.2-2+deb10u4) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../libnginx-mod-http-fancyindex_1.14.2-2+deb10u4_armhf.deb ...
+Unpacking libnginx-mod-http-fancyindex (1.14.2-2+deb10u4) over (1.14.2-2+deb10u3) ...
+Setting up libnginx-mod-http-fancyindex (1.14.2-2+deb10u4) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../libnginx-mod-http-geoip_1.14.2-2+deb10u4_armhf.deb ...
+Unpacking libnginx-mod-http-geoip (1.14.2-2+deb10u4) over (1.14.2-2+deb10u3) ...
+Setting up libnginx-mod-http-geoip (1.14.2-2+deb10u4) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../libnginx-mod-http-headers-more-filter_1.14.2-2+deb10u4_armhf.deb ...
+Unpacking libnginx-mod-http-headers-more-filter (1.14.2-2+deb10u4) over (1.14.2-2+deb10u3) ...
+Setting up libnginx-mod-http-headers-more-filter (1.14.2-2+deb10u4) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../libnginx-mod-http-image-filter_1.14.2-2+deb10u4_armhf.deb ...
+Unpacking libnginx-mod-http-image-filter (1.14.2-2+deb10u4) over (1.14.2-2+deb10u3) ...
+Setting up libnginx-mod-http-image-filter (1.14.2-2+deb10u4) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../libnginx-mod-http-ndk_1.14.2-2+deb10u4_armhf.deb ...
+Unpacking libnginx-mod-http-ndk (1.14.2-2+deb10u4) over (1.14.2-2+deb10u3) ...
+Setting up libnginx-mod-http-ndk (1.14.2-2+deb10u4) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../libnginx-mod-http-lua_1.14.2-2+deb10u4_armhf.deb ...
+Unpacking libnginx-mod-http-lua (1.14.2-2+deb10u4) over (1.14.2-2+deb10u3) ...
+Setting up libnginx-mod-http-lua (1.14.2-2+deb10u4) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../libnginx-mod-http-perl_1.14.2-2+deb10u4_armhf.deb ...
+Unpacking libnginx-mod-http-perl (1.14.2-2+deb10u4) over (1.14.2-2+deb10u3) ...
+Setting up libnginx-mod-http-perl (1.14.2-2+deb10u4) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../libnginx-mod-http-subs-filter_1.14.2-2+deb10u4_armhf.deb ...
+Unpacking libnginx-mod-http-subs-filter (1.14.2-2+deb10u4) over (1.14.2-2+deb10u3) ...
+Setting up libnginx-mod-http-subs-filter (1.14.2-2+deb10u4) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../libnginx-mod-http-uploadprogress_1.14.2-2+deb10u4_armhf.deb ...
+Unpacking libnginx-mod-http-uploadprogress (1.14.2-2+deb10u4) over (1.14.2-2+deb10u3) ...
+Setting up libnginx-mod-http-uploadprogress (1.14.2-2+deb10u4) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../libnginx-mod-http-upstream-fair_1.14.2-2+deb10u4_armhf.deb ...
+Unpacking libnginx-mod-http-upstream-fair (1.14.2-2+deb10u4) over (1.14.2-2+deb10u3) ...
+Setting up libnginx-mod-http-upstream-fair (1.14.2-2+deb10u4) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../libnginx-mod-http-xslt-filter_1.14.2-2+deb10u4_armhf.deb ...
+Unpacking libnginx-mod-http-xslt-filter (1.14.2-2+deb10u4) over (1.14.2-2+deb10u3) ...
+Setting up libnginx-mod-http-xslt-filter (1.14.2-2+deb10u4) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../libnginx-mod-mail_1.14.2-2+deb10u4_armhf.deb ...
+Unpacking libnginx-mod-mail (1.14.2-2+deb10u4) over (1.14.2-2+deb10u3) ...
+Setting up libnginx-mod-mail (1.14.2-2+deb10u4) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../libnginx-mod-nchan_1.14.2-2+deb10u4_armhf.deb ...
+Unpacking libnginx-mod-nchan (1.14.2-2+deb10u4) over (1.14.2-2+deb10u3) ...
+Setting up libnginx-mod-nchan (1.14.2-2+deb10u4) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../libnginx-mod-stream_1.14.2-2+deb10u4_armhf.deb ...
+Unpacking libnginx-mod-stream (1.14.2-2+deb10u4) over (1.14.2-2+deb10u3) ...
+Setting up libnginx-mod-stream (1.14.2-2+deb10u4) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../libnginx-mod-http-auth-pam_1.14.2-2+deb10u4_armhf.deb ...
+Unpacking libnginx-mod-http-auth-pam (1.14.2-2+deb10u4) over (1.14.2-2+deb10u3) ...
+Setting up libnginx-mod-http-auth-pam (1.14.2-2+deb10u4) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../libnginx-mod-http-cache-purge_1.14.2-2+deb10u4_armhf.deb ...
+Unpacking libnginx-mod-http-cache-purge (1.14.2-2+deb10u4) over (1.14.2-2+deb10u3) ...
+Setting up libnginx-mod-http-cache-purge (1.14.2-2+deb10u4) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../nginx-extras_1.14.2-2+deb10u4_armhf.deb ...
+Unpacking nginx-extras (1.14.2-2+deb10u4) over (1.14.2-2+deb10u3) ...
+Setting up nginx-extras (1.14.2-2+deb10u4) ...
+[ ok ] Upgrading binary: nginx.
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../libwebp6_0.6.1-2+deb10u1_armhf.deb ...
+Unpacking libwebp6:armhf (0.6.1-2+deb10u1) over (0.6.1-2) ...
+Setting up libwebp6:armhf (0.6.1-2+deb10u1) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../libtiff5_4.1.0+git191117-2~deb10u3_armhf.deb ...
+Unpacking libtiff5:armhf (4.1.0+git191117-2~deb10u3) over (4.1.0+git191117-2~deb10u1) ...
+Setting up libtiff5:armhf (4.1.0+git191117-2~deb10u3) ...
+(Reading database ... 52756 files and directories currently installed.)
+Preparing to unpack .../libx11-data_2%3a1.6.7-1+deb10u2_all.deb ...
+Unpacking libx11-data (2:1.6.7-1+deb10u2) over (2:1.6.7-1+deb10u1) ...
+Setting up libx11-data (2:1.6.7-1+deb10u2) ...
+(Reading database ... 52757 files and directories currently installed.)
+Preparing to unpack .../libx11-6_2%3a1.6.7-1+deb10u2_armhf.deb ...
+Unpacking libx11-6:armhf (2:1.6.7-1+deb10u2) over (2:1.6.7-1+deb10u1) ...
+Setting up libx11-6:armhf (2:1.6.7-1+deb10u2) ...
+(Reading database ... 52757 files and directories currently installed.)
+Preparing to unpack .../mariadb-server_1%3a10.3.31-0+deb10u1_all.deb ...
+Unpacking mariadb-server (1:10.3.31-0+deb10u1) over (1:10.3.27-0+deb10u1) ...
+Setting up mariadb-server (1:10.3.31-0+deb10u1) ...
+(Reading database ... 52757 files and directories currently installed.)
+Preparing to unpack .../multiarch-support_2.28-10+rpt2+rpi1_armhf.deb ...
+Unpacking multiarch-support (2.28-10+rpt2+rpi1) over (2.28-10+rpi1) ...
+Setting up multiarch-support (2.28-10+rpt2+rpi1) ...
+(Reading database ... 52757 files and directories currently installed.)
+Preparing to unpack .../openssl_1.1.1d-0+deb10u7_armhf.deb ...
+Unpacking openssl (1.1.1d-0+deb10u7) over (1.1.1d-0+deb10u5+rpt1) ...
+Setting up openssl (1.1.1d-0+deb10u7) ...
+(Reading database ... 52757 files and directories currently installed.)
+Preparing to unpack .../php7.3-xml_7.3.31-1~deb10u1_armhf.deb ...
+Unpacking php7.3-xml (7.3.31-1~deb10u1) over (7.3.27-1~deb10u1) ...
+Preparing to unpack .../php7.3-common_7.3.31-1~deb10u1_armhf.deb ...
+Unpacking php7.3-common (7.3.31-1~deb10u1) over (7.3.27-1~deb10u1) ...
+Setting up php7.3-common (7.3.31-1~deb10u1) ...
+(Reading database ... 52757 files and directories currently installed.)
+Preparing to unpack .../php7.3-cli_7.3.31-1~deb10u1_armhf.deb ...
+Unpacking php7.3-cli (7.3.31-1~deb10u1) over (7.3.27-1~deb10u1) ...
+Setting up php7.3-cli (7.3.31-1~deb10u1) ...
+(Reading database ... 52757 files and directories currently installed.)
+Preparing to unpack .../php7.3-opcache_7.3.31-1~deb10u1_armhf.deb ...
+Unpacking php7.3-opcache (7.3.31-1~deb10u1) over (7.3.27-1~deb10u1) ...
+Setting up php7.3-opcache (7.3.31-1~deb10u1) ...
+(Reading database ... 52757 files and directories currently installed.)
+Preparing to unpack .../php7.3-mysql_7.3.31-1~deb10u1_armhf.deb ...
+Unpacking php7.3-mysql (7.3.31-1~deb10u1) over (7.3.27-1~deb10u1) ...
+Setting up php7.3-mysql (7.3.31-1~deb10u1) ...
+(Reading database ... 52757 files and directories currently installed.)
+Preparing to unpack .../php7.3-mbstring_7.3.31-1~deb10u1_armhf.deb ...
+Unpacking php7.3-mbstring (7.3.31-1~deb10u1) over (7.3.27-1~deb10u1) ...
+Preparing to unpack .../php7.3-ldap_7.3.31-1~deb10u1_armhf.deb ...
+Unpacking php7.3-ldap (7.3.31-1~deb10u1) over (7.3.27-1~deb10u1) ...
+Setting up php7.3-ldap (7.3.31-1~deb10u1) ...
+(Reading database ... 52757 files and directories currently installed.)
+Preparing to unpack .../php7.3-json_7.3.31-1~deb10u1_armhf.deb ...
+Unpacking php7.3-json (7.3.31-1~deb10u1) over (7.3.27-1~deb10u1) ...
+Setting up php7.3-json (7.3.31-1~deb10u1) ...
+(Reading database ... 52757 files and directories currently installed.)
+Preparing to unpack .../php7.3-intl_7.3.31-1~deb10u1_armhf.deb ...
+Unpacking php7.3-intl (7.3.31-1~deb10u1) over (7.3.27-1~deb10u1) ...
+Setting up php7.3-intl (7.3.31-1~deb10u1) ...
+(Reading database ... 52757 files and directories currently installed.)
+Preparing to unpack .../php7.3-gd_7.3.31-1~deb10u1_armhf.deb ...
+Unpacking php7.3-gd (7.3.31-1~deb10u1) over (7.3.27-1~deb10u1) ...
+Preparing to unpack .../php7.3-fpm_7.3.31-1~deb10u1_armhf.deb ...
+Unpacking php7.3-fpm (7.3.31-1~deb10u1) over (7.3.27-1~deb10u1) ...
+Setting up php7.3-fpm (7.3.31-1~deb10u1) ...
+(Reading database ... 52757 files and directories currently installed.)
+Preparing to unpack .../php7.3-curl_7.3.31-1~deb10u1_armhf.deb ...
+Unpacking php7.3-curl (7.3.31-1~deb10u1) over (7.3.27-1~deb10u1) ...
+Preparing to unpack .../php7.3-readline_7.3.31-1~deb10u1_armhf.deb ...
+Unpacking php7.3-readline (7.3.31-1~deb10u1) over (7.3.27-1~deb10u1) ...
+Setting up php7.3-readline (7.3.31-1~deb10u1) ...
+(Reading database ... 52757 files and directories currently installed.)
+Preparing to unpack .../python-dnspython_1.16.0-1+deb10u1_all.deb ...
+Unpacking python-dnspython (1.16.0-1+deb10u1) over (1.16.0-1) ...
+Setting up python-dnspython (1.16.0-1+deb10u1) ...
+(Reading database ... 52757 files and directories currently installed.)
+Preparing to unpack .../metronome_3.14.5+ynh10-1_armhf.deb ...
+Unpacking metronome (3.14.5+ynh10-1) over (3.14.1+ynh10-1) ...
+Setting up metronome (3.14.5+ynh10-1) ...
+Installing new version of config file /etc/metronome/certs/Makefile ...
+
+Configuration file '/etc/metronome/metronome.cfg.lua'
+ ==> Modified (by you or by a script) since installation.
+ ==> Package distributor has shipped an updated version.
+   What would you like to do about it ?  Your options are:
+    Y or I  : install the package maintainer's version
+    N or O  : keep your currently-installed version
+      D     : show the differences between the versions
+      Z     : start a shell to examine the situation
+ The default action is to keep your current version.
+*** metronome.cfg.lua (Y/I/N/O/D/Z) [default=N] ? n
+(Reading database ... 52757 files and directories currently installed.)
+Preparing to unpack .../archives/ssowat_4.3.3_all.deb ...
+Unpacking ssowat (4.3.3) over (4.1.3) ...
+Setting up ssowat (4.3.3) ...
+(Reading database ... 52769 files and directories currently installed.)
+Preparing to unpack .../00-iputils-ping_3%3a20180629-2+deb10u2_armhf.deb ...
+Unpacking iputils-ping (3:20180629-2+deb10u2) over (3:20180629-2+deb10u1) ...
+Preparing to unpack .../01-libisc-export1100_1%3a9.11.5.P4+dfsg-5.1+deb10u6_armhf.deb ...
+Unpacking libisc-export1100:armhf (1:9.11.5.P4+dfsg-5.1+deb10u6) over (1:9.11.5.P4+dfsg-5.1+deb10u3) ...
+Preparing to unpack .../02-libdns-export1104_1%3a9.11.5.P4+dfsg-5.1+deb10u6_armhf.deb ...
+Unpacking libdns-export1104 (1:9.11.5.P4+dfsg-5.1+deb10u6) over (1:9.11.5.P4+dfsg-5.1+deb10u3) ...
+Preparing to unpack .../03-isc-dhcp-client_4.4.1-2+deb10u1_armhf.deb ...
+Unpacking isc-dhcp-client (4.4.1-2+deb10u1) over (4.4.1-2) ...
+Preparing to unpack .../04-isc-dhcp-common_4.4.1-2+deb10u1_armhf.deb ...
+Unpacking isc-dhcp-common (4.4.1-2+deb10u1) over (4.4.1-2) ...
+Preparing to unpack .../05-libc-l10n_2.28-10+rpt2+rpi1_all.deb ...
+Unpacking libc-l10n (2.28-10+rpt2+rpi1) over (2.28-10+rpi1) ...
+Preparing to unpack .../06-locales_2.28-10+rpt2+rpi1_all.deb ...
+Unpacking locales (2.28-10+rpt2+rpi1) over (2.28-10+rpi1) ...
+Preparing to unpack .../07-alsa-utils_1.1.8-2+rpt1_armhf.deb ...
+Unpacking alsa-utils (1.1.8-2+rpt1) over (1.1.8-2) ...
+Preparing to unpack .../08-firmware-atheros_1%3a20190114-2+rpt4_all.deb ...
+Unpacking firmware-atheros (1:20190114-2+rpt4) over (1:20190114-1+rpt11) ...
+Preparing to unpack .../09-firmware-brcm80211_1%3a20190114-2+rpt4_all.deb ...
+Unpacking firmware-brcm80211 (1:20190114-2+rpt4) over (1:20190114-1+rpt11) ...
+Preparing to unpack .../10-firmware-libertas_1%3a20190114-2+rpt4_all.deb ...
+Unpacking firmware-libertas (1:20190114-2+rpt4) over (1:20190114-1+rpt11) ...
+Preparing to unpack .../11-firmware-misc-nonfree_1%3a20190114-2+rpt4_all.deb ...
+Unpacking firmware-misc-nonfree (1:20190114-2+rpt4) over (1:20190114-1+rpt11) ...
+Preparing to unpack .../12-firmware-realtek_1%3a20190114-2+rpt4_all.deb ...
+Unpacking firmware-realtek (1:20190114-2+rpt4) over (1:20190114-1+rpt11) ...
+Preparing to unpack .../13-klibc-utils_2.0.6-1+rpi1+deb10u1_armhf.deb ...
+Unpacking klibc-utils (2.0.6-1+rpi1+deb10u1) over (2.0.6-1+rpi1) ...
+Preparing to unpack .../14-libklibc_2.0.6-1+rpi1+deb10u1_armhf.deb ...
+Unpacking libklibc:armhf (2.0.6-1+rpi1+deb10u1) over (2.0.6-1+rpi1) ...
+Preparing to unpack .../15-libjs-underscore_1.9.1~dfsg-1+deb10u1_all.deb ...
+Unpacking libjs-underscore (1.9.1~dfsg-1+deb10u1) over (1.9.1~dfsg-1) ...
+Preparing to unpack .../16-libraspberrypi-doc_1%3a1.20211201~buster-1_armhf.deb ...
+Unpacking libraspberrypi-doc (1:1.20211201~buster-1) over (1.20210201-1) ...
+Preparing to unpack .../17-libraspberrypi-dev_1%3a1.20211201~buster-1_armhf.deb ...
+Unpacking libraspberrypi-dev (1:1.20211201~buster-1) over (1.20210201-1) ...
+Preparing to unpack .../18-raspberrypi-kernel_1%3a1.20211201~buster-1_armhf.deb ...
+Adding 'diversion of /boot/kernel.img to /usr/share/rpikernelhack/kernel.img by rpikernelhack'
+Adding 'diversion of /boot/kernel7.img to /usr/share/rpikernelhack/kernel7.img by rpikernelhack'
+Adding 'diversion of /boot/kernel7l.img to /usr/share/rpikernelhack/kernel7l.img by rpikernelhack'
+Adding 'diversion of /boot/kernel8.img to /usr/share/rpikernelhack/kernel8.img by rpikernelhack'
+Adding 'diversion of /boot/bcm2708-rpi-b-plus.dtb to /usr/share/rpikernelhack/bcm2708-rpi-b-plus.dtb by rpikernelhack'
+Adding 'diversion of /boot/bcm2708-rpi-b-rev1.dtb to /usr/share/rpikernelhack/bcm2708-rpi-b-rev1.dtb by rpikernelhack'
+Adding 'diversion of /boot/bcm2708-rpi-b.dtb to /usr/share/rpikernelhack/bcm2708-rpi-b.dtb by rpikernelhack'
+Adding 'diversion of /boot/bcm2708-rpi-cm.dtb to /usr/share/rpikernelhack/bcm2708-rpi-cm.dtb by rpikernelhack'
+Adding 'diversion of /boot/bcm2708-rpi-zero-w.dtb to /usr/share/rpikernelhack/bcm2708-rpi-zero-w.dtb by rpikernelhack'
+Adding 'diversion of /boot/bcm2708-rpi-zero.dtb to /usr/share/rpikernelhack/bcm2708-rpi-zero.dtb by rpikernelhack'
+Adding 'diversion of /boot/bcm2709-rpi-2-b.dtb to /usr/share/rpikernelhack/bcm2709-rpi-2-b.dtb by rpikernelhack'
+Adding 'diversion of /boot/bcm2710-rpi-2-b.dtb to /usr/share/rpikernelhack/bcm2710-rpi-2-b.dtb by rpikernelhack'
+Adding 'diversion of /boot/bcm2710-rpi-3-b-plus.dtb to /usr/share/rpikernelhack/bcm2710-rpi-3-b-plus.dtb by rpikernelhack'
+Adding 'diversion of /boot/bcm2710-rpi-3-b.dtb to /usr/share/rpikernelhack/bcm2710-rpi-3-b.dtb by rpikernelhack'
+Adding 'diversion of /boot/bcm2710-rpi-cm3.dtb to /usr/share/rpikernelhack/bcm2710-rpi-cm3.dtb by rpikernelhack'
+Adding 'diversion of /boot/bcm2710-rpi-zero-2-w.dtb to /usr/share/rpikernelhack/bcm2710-rpi-zero-2-w.dtb by rpikernelhack'
+Adding 'diversion of /boot/bcm2710-rpi-zero-2.dtb to /usr/share/rpikernelhack/bcm2710-rpi-zero-2.dtb by rpikernelhack'
+Adding 'diversion of /boot/bcm2711-rpi-4-b.dtb to /usr/share/rpikernelhack/bcm2711-rpi-4-b.dtb by rpikernelhack'
+Adding 'diversion of /boot/bcm2711-rpi-400.dtb to /usr/share/rpikernelhack/bcm2711-rpi-400.dtb by rpikernelhack'
+Adding 'diversion of /boot/bcm2711-rpi-cm4.dtb to /usr/share/rpikernelhack/bcm2711-rpi-cm4.dtb by rpikernelhack'
+Adding 'diversion of /boot/COPYING.linux to /usr/share/rpikernelhack/COPYING.linux by rpikernelhack'
+Adding 'diversion of /boot/overlays/README to /usr/share/rpikernelhack/overlays/README by rpikernelhack'
+Adding 'diversion of /boot/overlays/act-led.dtbo to /usr/share/rpikernelhack/overlays/act-led.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/adafruit-st7735r.dtbo to /usr/share/rpikernelhack/overlays/adafruit-st7735r.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/adafruit18.dtbo to /usr/share/rpikernelhack/overlays/adafruit18.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/adau1977-adc.dtbo to /usr/share/rpikernelhack/overlays/adau1977-adc.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/adau7002-simple.dtbo to /usr/share/rpikernelhack/overlays/adau7002-simple.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/ads1015.dtbo to /usr/share/rpikernelhack/overlays/ads1015.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/ads1115.dtbo to /usr/share/rpikernelhack/overlays/ads1115.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/ads7846.dtbo to /usr/share/rpikernelhack/overlays/ads7846.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/adv7282m.dtbo to /usr/share/rpikernelhack/overlays/adv7282m.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/adv728x-m.dtbo to /usr/share/rpikernelhack/overlays/adv728x-m.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/akkordion-iqdacplus.dtbo to /usr/share/rpikernelhack/overlays/akkordion-iqdacplus.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/allo-boss-dac-pcm512x-audio.dtbo to /usr/share/rpikernelhack/overlays/allo-boss-dac-pcm512x-audio.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/allo-boss2-dac-audio.dtbo to /usr/share/rpikernelhack/overlays/allo-boss2-dac-audio.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/allo-digione.dtbo to /usr/share/rpikernelhack/overlays/allo-digione.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/allo-katana-dac-audio.dtbo to /usr/share/rpikernelhack/overlays/allo-katana-dac-audio.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/allo-piano-dac-pcm512x-audio.dtbo to /usr/share/rpikernelhack/overlays/allo-piano-dac-pcm512x-audio.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/allo-piano-dac-plus-pcm512x-audio.dtbo to /usr/share/rpikernelhack/overlays/allo-piano-dac-plus-pcm512x-audio.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/anyspi.dtbo to /usr/share/rpikernelhack/overlays/anyspi.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/apds9960.dtbo to /usr/share/rpikernelhack/overlays/apds9960.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/applepi-dac.dtbo to /usr/share/rpikernelhack/overlays/applepi-dac.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/at86rf233.dtbo to /usr/share/rpikernelhack/overlays/at86rf233.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/audioinjector-addons.dtbo to /usr/share/rpikernelhack/overlays/audioinjector-addons.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/audioinjector-isolated-soundcard.dtbo to /usr/share/rpikernelhack/overlays/audioinjector-isolated-soundcard.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/audioinjector-ultra.dtbo to /usr/share/rpikernelhack/overlays/audioinjector-ultra.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/audioinjector-wm8731-audio.dtbo to /usr/share/rpikernelhack/overlays/audioinjector-wm8731-audio.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/audiosense-pi.dtbo to /usr/share/rpikernelhack/overlays/audiosense-pi.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/audremap.dtbo to /usr/share/rpikernelhack/overlays/audremap.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/balena-fin.dtbo to /usr/share/rpikernelhack/overlays/balena-fin.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/cap1106.dtbo to /usr/share/rpikernelhack/overlays/cap1106.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/chipdip-dac.dtbo to /usr/share/rpikernelhack/overlays/chipdip-dac.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/cma.dtbo to /usr/share/rpikernelhack/overlays/cma.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/dht11.dtbo to /usr/share/rpikernelhack/overlays/dht11.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/dionaudio-loco-v2.dtbo to /usr/share/rpikernelhack/overlays/dionaudio-loco-v2.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/dionaudio-loco.dtbo to /usr/share/rpikernelhack/overlays/dionaudio-loco.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/disable-bt.dtbo to /usr/share/rpikernelhack/overlays/disable-bt.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/disable-wifi.dtbo to /usr/share/rpikernelhack/overlays/disable-wifi.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/dpi18.dtbo to /usr/share/rpikernelhack/overlays/dpi18.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/dpi18cpadhi.dtbo to /usr/share/rpikernelhack/overlays/dpi18cpadhi.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/dpi24.dtbo to /usr/share/rpikernelhack/overlays/dpi24.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/draws.dtbo to /usr/share/rpikernelhack/overlays/draws.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/dwc-otg.dtbo to /usr/share/rpikernelhack/overlays/dwc-otg.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/dwc2.dtbo to /usr/share/rpikernelhack/overlays/dwc2.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/edt-ft5406.dtbo to /usr/share/rpikernelhack/overlays/edt-ft5406.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/enc28j60-spi2.dtbo to /usr/share/rpikernelhack/overlays/enc28j60-spi2.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/enc28j60.dtbo to /usr/share/rpikernelhack/overlays/enc28j60.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/exc3000.dtbo to /usr/share/rpikernelhack/overlays/exc3000.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/fe-pi-audio.dtbo to /usr/share/rpikernelhack/overlays/fe-pi-audio.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/fsm-demo.dtbo to /usr/share/rpikernelhack/overlays/fsm-demo.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/ghost-amp.dtbo to /usr/share/rpikernelhack/overlays/ghost-amp.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/goodix.dtbo to /usr/share/rpikernelhack/overlays/goodix.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/googlevoicehat-soundcard.dtbo to /usr/share/rpikernelhack/overlays/googlevoicehat-soundcard.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/gpio-fan.dtbo to /usr/share/rpikernelhack/overlays/gpio-fan.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/gpio-ir-tx.dtbo to /usr/share/rpikernelhack/overlays/gpio-ir-tx.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/gpio-ir.dtbo to /usr/share/rpikernelhack/overlays/gpio-ir.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/gpio-key.dtbo to /usr/share/rpikernelhack/overlays/gpio-key.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/gpio-led.dtbo to /usr/share/rpikernelhack/overlays/gpio-led.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/gpio-no-bank0-irq.dtbo to /usr/share/rpikernelhack/overlays/gpio-no-bank0-irq.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/gpio-no-irq.dtbo to /usr/share/rpikernelhack/overlays/gpio-no-irq.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/gpio-poweroff.dtbo to /usr/share/rpikernelhack/overlays/gpio-poweroff.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/gpio-shutdown.dtbo to /usr/share/rpikernelhack/overlays/gpio-shutdown.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/hd44780-lcd.dtbo to /usr/share/rpikernelhack/overlays/hd44780-lcd.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/hdmi-backlight-hwhack-gpio.dtbo to /usr/share/rpikernelhack/overlays/hdmi-backlight-hwhack-gpio.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/hifiberry-amp.dtbo to /usr/share/rpikernelhack/overlays/hifiberry-amp.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/hifiberry-amp100.dtbo to /usr/share/rpikernelhack/overlays/hifiberry-amp100.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/hifiberry-dac.dtbo to /usr/share/rpikernelhack/overlays/hifiberry-dac.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/hifiberry-dacplus.dtbo to /usr/share/rpikernelhack/overlays/hifiberry-dacplus.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/hifiberry-dacplusadc.dtbo to /usr/share/rpikernelhack/overlays/hifiberry-dacplusadc.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/hifiberry-dacplusadcpro.dtbo to /usr/share/rpikernelhack/overlays/hifiberry-dacplusadcpro.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/hifiberry-dacplusdsp.dtbo to /usr/share/rpikernelhack/overlays/hifiberry-dacplusdsp.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/hifiberry-dacplushd.dtbo to /usr/share/rpikernelhack/overlays/hifiberry-dacplushd.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/hifiberry-digi-pro.dtbo to /usr/share/rpikernelhack/overlays/hifiberry-digi-pro.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/hifiberry-digi.dtbo to /usr/share/rpikernelhack/overlays/hifiberry-digi.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/highperi.dtbo to /usr/share/rpikernelhack/overlays/highperi.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/hy28a.dtbo to /usr/share/rpikernelhack/overlays/hy28a.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/hy28b-2017.dtbo to /usr/share/rpikernelhack/overlays/hy28b-2017.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/hy28b.dtbo to /usr/share/rpikernelhack/overlays/hy28b.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/i-sabre-q2m.dtbo to /usr/share/rpikernelhack/overlays/i-sabre-q2m.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/i2c-bcm2708.dtbo to /usr/share/rpikernelhack/overlays/i2c-bcm2708.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/i2c-gpio.dtbo to /usr/share/rpikernelhack/overlays/i2c-gpio.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/i2c-mux.dtbo to /usr/share/rpikernelhack/overlays/i2c-mux.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/i2c-pwm-pca9685a.dtbo to /usr/share/rpikernelhack/overlays/i2c-pwm-pca9685a.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/i2c-rtc-gpio.dtbo to /usr/share/rpikernelhack/overlays/i2c-rtc-gpio.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/i2c-rtc.dtbo to /usr/share/rpikernelhack/overlays/i2c-rtc.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/i2c-sensor.dtbo to /usr/share/rpikernelhack/overlays/i2c-sensor.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/i2c0.dtbo to /usr/share/rpikernelhack/overlays/i2c0.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/i2c1.dtbo to /usr/share/rpikernelhack/overlays/i2c1.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/i2c3.dtbo to /usr/share/rpikernelhack/overlays/i2c3.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/i2c4.dtbo to /usr/share/rpikernelhack/overlays/i2c4.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/i2c5.dtbo to /usr/share/rpikernelhack/overlays/i2c5.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/i2c6.dtbo to /usr/share/rpikernelhack/overlays/i2c6.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/i2s-gpio28-31.dtbo to /usr/share/rpikernelhack/overlays/i2s-gpio28-31.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/ilitek251x.dtbo to /usr/share/rpikernelhack/overlays/ilitek251x.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/imx219.dtbo to /usr/share/rpikernelhack/overlays/imx219.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/imx290.dtbo to /usr/share/rpikernelhack/overlays/imx290.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/imx378.dtbo to /usr/share/rpikernelhack/overlays/imx378.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/imx477.dtbo to /usr/share/rpikernelhack/overlays/imx477.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/imx519.dtbo to /usr/share/rpikernelhack/overlays/imx519.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/iqaudio-codec.dtbo to /usr/share/rpikernelhack/overlays/iqaudio-codec.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/iqaudio-dac.dtbo to /usr/share/rpikernelhack/overlays/iqaudio-dac.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/iqaudio-dacplus.dtbo to /usr/share/rpikernelhack/overlays/iqaudio-dacplus.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/iqaudio-digi-wm8804-audio.dtbo to /usr/share/rpikernelhack/overlays/iqaudio-digi-wm8804-audio.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/irs1125.dtbo to /usr/share/rpikernelhack/overlays/irs1125.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/jedec-spi-nor.dtbo to /usr/share/rpikernelhack/overlays/jedec-spi-nor.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/justboom-both.dtbo to /usr/share/rpikernelhack/overlays/justboom-both.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/justboom-dac.dtbo to /usr/share/rpikernelhack/overlays/justboom-dac.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/justboom-digi.dtbo to /usr/share/rpikernelhack/overlays/justboom-digi.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/ltc294x.dtbo to /usr/share/rpikernelhack/overlays/ltc294x.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/max98357a.dtbo to /usr/share/rpikernelhack/overlays/max98357a.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/maxtherm.dtbo to /usr/share/rpikernelhack/overlays/maxtherm.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/mbed-dac.dtbo to /usr/share/rpikernelhack/overlays/mbed-dac.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/mcp23017.dtbo to /usr/share/rpikernelhack/overlays/mcp23017.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/mcp23s17.dtbo to /usr/share/rpikernelhack/overlays/mcp23s17.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/mcp2515-can0.dtbo to /usr/share/rpikernelhack/overlays/mcp2515-can0.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/mcp2515-can1.dtbo to /usr/share/rpikernelhack/overlays/mcp2515-can1.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/mcp2515.dtbo to /usr/share/rpikernelhack/overlays/mcp2515.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/mcp251xfd.dtbo to /usr/share/rpikernelhack/overlays/mcp251xfd.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/mcp3008.dtbo to /usr/share/rpikernelhack/overlays/mcp3008.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/mcp3202.dtbo to /usr/share/rpikernelhack/overlays/mcp3202.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/mcp342x.dtbo to /usr/share/rpikernelhack/overlays/mcp342x.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/media-center.dtbo to /usr/share/rpikernelhack/overlays/media-center.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/merus-amp.dtbo to /usr/share/rpikernelhack/overlays/merus-amp.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/midi-uart0.dtbo to /usr/share/rpikernelhack/overlays/midi-uart0.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/midi-uart1.dtbo to /usr/share/rpikernelhack/overlays/midi-uart1.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/midi-uart2.dtbo to /usr/share/rpikernelhack/overlays/midi-uart2.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/midi-uart3.dtbo to /usr/share/rpikernelhack/overlays/midi-uart3.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/midi-uart4.dtbo to /usr/share/rpikernelhack/overlays/midi-uart4.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/midi-uart5.dtbo to /usr/share/rpikernelhack/overlays/midi-uart5.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/minipitft13.dtbo to /usr/share/rpikernelhack/overlays/minipitft13.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/miniuart-bt.dtbo to /usr/share/rpikernelhack/overlays/miniuart-bt.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/mlx90640.dtbo to /usr/share/rpikernelhack/overlays/mlx90640.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/mmc.dtbo to /usr/share/rpikernelhack/overlays/mmc.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/mpu6050.dtbo to /usr/share/rpikernelhack/overlays/mpu6050.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/mz61581.dtbo to /usr/share/rpikernelhack/overlays/mz61581.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/ov5647.dtbo to /usr/share/rpikernelhack/overlays/ov5647.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/ov7251.dtbo to /usr/share/rpikernelhack/overlays/ov7251.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/ov9281.dtbo to /usr/share/rpikernelhack/overlays/ov9281.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/overlay_map.dtb to /usr/share/rpikernelhack/overlays/overlay_map.dtb by rpikernelhack'
+Adding 'diversion of /boot/overlays/papirus.dtbo to /usr/share/rpikernelhack/overlays/papirus.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/pca953x.dtbo to /usr/share/rpikernelhack/overlays/pca953x.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/pcie-32bit-dma.dtbo to /usr/share/rpikernelhack/overlays/pcie-32bit-dma.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/pibell.dtbo to /usr/share/rpikernelhack/overlays/pibell.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/pifacedigital.dtbo to /usr/share/rpikernelhack/overlays/pifacedigital.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/pifi-40.dtbo to /usr/share/rpikernelhack/overlays/pifi-40.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/pifi-dac-hd.dtbo to /usr/share/rpikernelhack/overlays/pifi-dac-hd.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/pifi-dac-zero.dtbo to /usr/share/rpikernelhack/overlays/pifi-dac-zero.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/pifi-mini-210.dtbo to /usr/share/rpikernelhack/overlays/pifi-mini-210.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/piglow.dtbo to /usr/share/rpikernelhack/overlays/piglow.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/piscreen.dtbo to /usr/share/rpikernelhack/overlays/piscreen.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/piscreen2r.dtbo to /usr/share/rpikernelhack/overlays/piscreen2r.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/pisound.dtbo to /usr/share/rpikernelhack/overlays/pisound.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/pitft22.dtbo to /usr/share/rpikernelhack/overlays/pitft22.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/pitft28-capacitive.dtbo to /usr/share/rpikernelhack/overlays/pitft28-capacitive.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/pitft28-resistive.dtbo to /usr/share/rpikernelhack/overlays/pitft28-resistive.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/pitft35-resistive.dtbo to /usr/share/rpikernelhack/overlays/pitft35-resistive.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/pps-gpio.dtbo to /usr/share/rpikernelhack/overlays/pps-gpio.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/pwm-2chan.dtbo to /usr/share/rpikernelhack/overlays/pwm-2chan.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/pwm-ir-tx.dtbo to /usr/share/rpikernelhack/overlays/pwm-ir-tx.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/pwm.dtbo to /usr/share/rpikernelhack/overlays/pwm.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/qca7000-uart0.dtbo to /usr/share/rpikernelhack/overlays/qca7000-uart0.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/qca7000.dtbo to /usr/share/rpikernelhack/overlays/qca7000.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/rotary-encoder.dtbo to /usr/share/rpikernelhack/overlays/rotary-encoder.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/rpi-backlight.dtbo to /usr/share/rpikernelhack/overlays/rpi-backlight.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/rpi-cirrus-wm5102.dtbo to /usr/share/rpikernelhack/overlays/rpi-cirrus-wm5102.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/rpi-dac.dtbo to /usr/share/rpikernelhack/overlays/rpi-dac.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/rpi-display.dtbo to /usr/share/rpikernelhack/overlays/rpi-display.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/rpi-ft5406.dtbo to /usr/share/rpikernelhack/overlays/rpi-ft5406.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/rpi-poe-plus.dtbo to /usr/share/rpikernelhack/overlays/rpi-poe-plus.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/rpi-poe.dtbo to /usr/share/rpikernelhack/overlays/rpi-poe.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/rpi-proto.dtbo to /usr/share/rpikernelhack/overlays/rpi-proto.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/rpi-sense.dtbo to /usr/share/rpikernelhack/overlays/rpi-sense.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/rpi-tv.dtbo to /usr/share/rpikernelhack/overlays/rpi-tv.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/rpivid-v4l2.dtbo to /usr/share/rpikernelhack/overlays/rpivid-v4l2.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/rra-digidac1-wm8741-audio.dtbo to /usr/share/rpikernelhack/overlays/rra-digidac1-wm8741-audio.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/sainsmart18.dtbo to /usr/share/rpikernelhack/overlays/sainsmart18.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/sc16is750-i2c.dtbo to /usr/share/rpikernelhack/overlays/sc16is750-i2c.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/sc16is752-i2c.dtbo to /usr/share/rpikernelhack/overlays/sc16is752-i2c.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/sc16is752-spi0.dtbo to /usr/share/rpikernelhack/overlays/sc16is752-spi0.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/sc16is752-spi1.dtbo to /usr/share/rpikernelhack/overlays/sc16is752-spi1.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/sdhost.dtbo to /usr/share/rpikernelhack/overlays/sdhost.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/sdio.dtbo to /usr/share/rpikernelhack/overlays/sdio.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/seeed-can-fd-hat-v1.dtbo to /usr/share/rpikernelhack/overlays/seeed-can-fd-hat-v1.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/seeed-can-fd-hat-v2.dtbo to /usr/share/rpikernelhack/overlays/seeed-can-fd-hat-v2.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/sh1106-spi.dtbo to /usr/share/rpikernelhack/overlays/sh1106-spi.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/si446x-spi0.dtbo to /usr/share/rpikernelhack/overlays/si446x-spi0.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/smi-dev.dtbo to /usr/share/rpikernelhack/overlays/smi-dev.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/smi-nand.dtbo to /usr/share/rpikernelhack/overlays/smi-nand.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/smi.dtbo to /usr/share/rpikernelhack/overlays/smi.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/spi-gpio35-39.dtbo to /usr/share/rpikernelhack/overlays/spi-gpio35-39.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/spi-gpio40-45.dtbo to /usr/share/rpikernelhack/overlays/spi-gpio40-45.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/spi-rtc.dtbo to /usr/share/rpikernelhack/overlays/spi-rtc.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/spi0-1cs.dtbo to /usr/share/rpikernelhack/overlays/spi0-1cs.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/spi0-2cs.dtbo to /usr/share/rpikernelhack/overlays/spi0-2cs.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/spi1-1cs.dtbo to /usr/share/rpikernelhack/overlays/spi1-1cs.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/spi1-2cs.dtbo to /usr/share/rpikernelhack/overlays/spi1-2cs.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/spi1-3cs.dtbo to /usr/share/rpikernelhack/overlays/spi1-3cs.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/spi2-1cs.dtbo to /usr/share/rpikernelhack/overlays/spi2-1cs.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/spi2-2cs.dtbo to /usr/share/rpikernelhack/overlays/spi2-2cs.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/spi2-3cs.dtbo to /usr/share/rpikernelhack/overlays/spi2-3cs.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/spi3-1cs.dtbo to /usr/share/rpikernelhack/overlays/spi3-1cs.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/spi3-2cs.dtbo to /usr/share/rpikernelhack/overlays/spi3-2cs.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/spi4-1cs.dtbo to /usr/share/rpikernelhack/overlays/spi4-1cs.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/spi4-2cs.dtbo to /usr/share/rpikernelhack/overlays/spi4-2cs.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/spi5-1cs.dtbo to /usr/share/rpikernelhack/overlays/spi5-1cs.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/spi5-2cs.dtbo to /usr/share/rpikernelhack/overlays/spi5-2cs.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/spi6-1cs.dtbo to /usr/share/rpikernelhack/overlays/spi6-1cs.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/spi6-2cs.dtbo to /usr/share/rpikernelhack/overlays/spi6-2cs.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/ssd1306-spi.dtbo to /usr/share/rpikernelhack/overlays/ssd1306-spi.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/ssd1306.dtbo to /usr/share/rpikernelhack/overlays/ssd1306.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/ssd1331-spi.dtbo to /usr/share/rpikernelhack/overlays/ssd1331-spi.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/ssd1351-spi.dtbo to /usr/share/rpikernelhack/overlays/ssd1351-spi.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/superaudioboard.dtbo to /usr/share/rpikernelhack/overlays/superaudioboard.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/sx150x.dtbo to /usr/share/rpikernelhack/overlays/sx150x.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/tc358743-audio.dtbo to /usr/share/rpikernelhack/overlays/tc358743-audio.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/tc358743.dtbo to /usr/share/rpikernelhack/overlays/tc358743.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/tinylcd35.dtbo to /usr/share/rpikernelhack/overlays/tinylcd35.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/tpm-slb9670.dtbo to /usr/share/rpikernelhack/overlays/tpm-slb9670.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/uart0.dtbo to /usr/share/rpikernelhack/overlays/uart0.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/uart1.dtbo to /usr/share/rpikernelhack/overlays/uart1.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/uart2.dtbo to /usr/share/rpikernelhack/overlays/uart2.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/uart3.dtbo to /usr/share/rpikernelhack/overlays/uart3.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/uart4.dtbo to /usr/share/rpikernelhack/overlays/uart4.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/uart5.dtbo to /usr/share/rpikernelhack/overlays/uart5.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/udrc.dtbo to /usr/share/rpikernelhack/overlays/udrc.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/ugreen-dabboard.dtbo to /usr/share/rpikernelhack/overlays/ugreen-dabboard.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/upstream-pi4.dtbo to /usr/share/rpikernelhack/overlays/upstream-pi4.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/upstream.dtbo to /usr/share/rpikernelhack/overlays/upstream.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/vc4-fkms-v3d-pi4.dtbo to /usr/share/rpikernelhack/overlays/vc4-fkms-v3d-pi4.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/vc4-fkms-v3d.dtbo to /usr/share/rpikernelhack/overlays/vc4-fkms-v3d.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/vc4-kms-dpi-at056tn53v1.dtbo to /usr/share/rpikernelhack/overlays/vc4-kms-dpi-at056tn53v1.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/vc4-kms-dsi-7inch.dtbo to /usr/share/rpikernelhack/overlays/vc4-kms-dsi-7inch.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/vc4-kms-dsi-lt070me05000-v2.dtbo to /usr/share/rpikernelhack/overlays/vc4-kms-dsi-lt070me05000-v2.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/vc4-kms-dsi-lt070me05000.dtbo to /usr/share/rpikernelhack/overlays/vc4-kms-dsi-lt070me05000.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/vc4-kms-kippah-7inch.dtbo to /usr/share/rpikernelhack/overlays/vc4-kms-kippah-7inch.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/vc4-kms-v3d-pi4.dtbo to /usr/share/rpikernelhack/overlays/vc4-kms-v3d-pi4.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/vc4-kms-v3d.dtbo to /usr/share/rpikernelhack/overlays/vc4-kms-v3d.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/vc4-kms-vga666.dtbo to /usr/share/rpikernelhack/overlays/vc4-kms-vga666.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/vga666.dtbo to /usr/share/rpikernelhack/overlays/vga666.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/w1-gpio-pullup.dtbo to /usr/share/rpikernelhack/overlays/w1-gpio-pullup.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/w1-gpio.dtbo to /usr/share/rpikernelhack/overlays/w1-gpio.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/w5500.dtbo to /usr/share/rpikernelhack/overlays/w5500.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/wittypi.dtbo to /usr/share/rpikernelhack/overlays/wittypi.dtbo by rpikernelhack'
+Adding 'diversion of /boot/overlays/wm8960-soundcard.dtbo to /usr/share/rpikernelhack/overlays/wm8960-soundcard.dtbo by rpikernelhack'
+Unpacking raspberrypi-kernel (1:1.20211201~buster-1) over (1.20210201-1) ...
+run-parts: executing /etc/kernel/postrm.d/initramfs-tools 5.10.11+ /boot/kernel.img
+run-parts: executing /etc/kernel/postrm.d/initramfs-tools 5.10.11-v7+ /boot/kernel7.img
+run-parts: executing /etc/kernel/postrm.d/initramfs-tools 5.10.11-v7l+ /boot/kernel7l.img
+run-parts: executing /etc/kernel/postrm.d/initramfs-tools 5.10.11-v8+ /boot/kernel8.img
+Preparing to unpack .../19-libraspberrypi-bin_1%3a1.20211201~buster-1_armhf.deb ...
+Unpacking libraspberrypi-bin (1:1.20211201~buster-1) over (1.20210201-1) ...
+Preparing to unpack .../20-libraspberrypi0_1%3a1.20211201~buster-1_armhf.deb ...
+Unpacking libraspberrypi0 (1:1.20211201~buster-1) over (1.20210201-1) ...
+Preparing to unpack .../21-raspberrypi-bootloader_1%3a1.20211201~buster-1_armhf.deb ...
+Adding 'diversion of /boot/start.elf to /usr/share/rpikernelhack/start.elf by rpikernelhack'
+Adding 'diversion of /boot/start_cd.elf to /usr/share/rpikernelhack/start_cd.elf by rpikernelhack'
+Adding 'diversion of /boot/start_db.elf to /usr/share/rpikernelhack/start_db.elf by rpikernelhack'
+Adding 'diversion of /boot/start_x.elf to /usr/share/rpikernelhack/start_x.elf by rpikernelhack'
+Adding 'diversion of /boot/fixup.dat to /usr/share/rpikernelhack/fixup.dat by rpikernelhack'
+Adding 'diversion of /boot/fixup_cd.dat to /usr/share/rpikernelhack/fixup_cd.dat by rpikernelhack'
+Adding 'diversion of /boot/fixup_db.dat to /usr/share/rpikernelhack/fixup_db.dat by rpikernelhack'
+Adding 'diversion of /boot/fixup_x.dat to /usr/share/rpikernelhack/fixup_x.dat by rpikernelhack'
+Adding 'diversion of /boot/bootcode.bin to /usr/share/rpikernelhack/bootcode.bin by rpikernelhack'
+Adding 'diversion of /boot/start4.elf to /usr/share/rpikernelhack/start4.elf by rpikernelhack'
+Adding 'diversion of /boot/start4cd.elf to /usr/share/rpikernelhack/start4cd.elf by rpikernelhack'
+Adding 'diversion of /boot/start4db.elf to /usr/share/rpikernelhack/start4db.elf by rpikernelhack'
+Adding 'diversion of /boot/start4x.elf to /usr/share/rpikernelhack/start4x.elf by rpikernelhack'
+Adding 'diversion of /boot/fixup4.dat to /usr/share/rpikernelhack/fixup4.dat by rpikernelhack'
+Adding 'diversion of /boot/fixup4cd.dat to /usr/share/rpikernelhack/fixup4cd.dat by rpikernelhack'
+Adding 'diversion of /boot/fixup4db.dat to /usr/share/rpikernelhack/fixup4db.dat by rpikernelhack'
+Adding 'diversion of /boot/fixup4x.dat to /usr/share/rpikernelhack/fixup4x.dat by rpikernelhack'
+Adding 'diversion of /boot/LICENCE.broadcom to /usr/share/rpikernelhack/LICENCE.broadcom by rpikernelhack'
+Unpacking raspberrypi-bootloader (1:1.20211201~buster-1) over (1.20210201-1) ...
+Preparing to unpack .../22-php-pear_1%3a1.10.6+submodules+notgz-1.1+deb10u2_all.deb ...
+Unpacking php-pear (1:1.10.6+submodules+notgz-1.1+deb10u2) over (1:1.10.6+submodules+notgz-1.1+deb10u1) ...
+Preparing to unpack .../23-raspberrypi-sys-mods_20211005_armhf.deb ...
+Unpacking raspberrypi-sys-mods (20211005) over (20210208) ...
+Preparing to unpack .../24-pi-bluetooth_0.1.18_all.deb ...
+Unpacking pi-bluetooth (0.1.18) over (0.1.15) ...
+Preparing to unpack .../25-raspberrypi-net-mods_1.3.2_all.deb ...
+Unpacking raspberrypi-net-mods (1.3.2) over (1.3.0) ...
+Preparing to unpack .../26-rpi-eeprom_13.3-1~buster_armhf.deb ...
+Unpacking rpi-eeprom (13.3-1~buster) over (11.7-1) ...
+Preparing to unpack .../27-rpi-update_20210618_all.deb ...
+Unpacking rpi-update (20210618) over (20200409) ...
+Preparing to unpack .../28-wpasupplicant_2%3a2.7+git20190128+0c1e29f-6+deb10u3_armhf.deb ...
+Unpacking wpasupplicant (2:2.7+git20190128+0c1e29f-6+deb10u3) over (2:2.7+git20190128+0c1e29f-6+deb10u2) ...
+Setting up systemd-sysv (241-7~deb10u8+rpi1) ...
+Setting up php-pear (1:1.10.6+submodules+notgz-1.1+deb10u2) ...
+Setting up libc-l10n (2.28-10+rpt2+rpi1) ...
+Setting up ssh (1:7.9p1-10+deb10u2+rpt1) ...
+Setting up php7.3-mbstring (7.3.31-1~deb10u1) ...
+Setting up libpython3.7:armhf (3.7.3-2+deb10u3) ...
+Setting up python3-debconf (1.5.71+deb10u1) ...
+Setting up firmware-atheros (1:20190114-2+rpt4) ...
+Setting up firmware-misc-nonfree (1:20190114-2+rpt4) ...
+update-initramfs: deferring update (trigger activated)
+Setting up debconf-i18n (1.5.71+deb10u1) ...
+Setting up libntfs-3g883 (1:2017.3.23AR.3-3+deb10u1) ...
+Setting up raspberrypi-sys-mods (20211005) ...
+Installing new version of config file /etc/sysctl.d/98-rpi.conf ...
+Installing new version of config file /etc/udev/rules.d/99-com.rules ...
+Blocking vscode repo...
+Removing obsolete conffile /etc/apt/preferences.d/3rd_parties.pref ...
+Setting up locales (2.28-10+rpt2+rpi1) ...
+Generating locales (this might take a while)...
+  en_US.UTF-8... done
+Generation complete.
+Setting up raspberrypi-kernel (1:1.20211201~buster-1) ...
+Removing 'diversion of /boot/kernel.img to /usr/share/rpikernelhack/kernel.img by rpikernelhack'
+Removing 'diversion of /boot/kernel7.img to /usr/share/rpikernelhack/kernel7.img by rpikernelhack'
+Removing 'diversion of /boot/kernel7l.img to /usr/share/rpikernelhack/kernel7l.img by rpikernelhack'
+Removing 'diversion of /boot/kernel8.img to /usr/share/rpikernelhack/kernel8.img by rpikernelhack'
+Removing 'diversion of /boot/bcm2708-rpi-b-plus.dtb to /usr/share/rpikernelhack/bcm2708-rpi-b-plus.dtb by rpikernelhack'
+Removing 'diversion of /boot/bcm2708-rpi-b-rev1.dtb to /usr/share/rpikernelhack/bcm2708-rpi-b-rev1.dtb by rpikernelhack'
+Removing 'diversion of /boot/bcm2708-rpi-b.dtb to /usr/share/rpikernelhack/bcm2708-rpi-b.dtb by rpikernelhack'
+Removing 'diversion of /boot/bcm2708-rpi-cm.dtb to /usr/share/rpikernelhack/bcm2708-rpi-cm.dtb by rpikernelhack'
+Removing 'diversion of /boot/bcm2708-rpi-zero-w.dtb to /usr/share/rpikernelhack/bcm2708-rpi-zero-w.dtb by rpikernelhack'
+Removing 'diversion of /boot/bcm2708-rpi-zero.dtb to /usr/share/rpikernelhack/bcm2708-rpi-zero.dtb by rpikernelhack'
+Removing 'diversion of /boot/bcm2709-rpi-2-b.dtb to /usr/share/rpikernelhack/bcm2709-rpi-2-b.dtb by rpikernelhack'
+Removing 'diversion of /boot/bcm2710-rpi-2-b.dtb to /usr/share/rpikernelhack/bcm2710-rpi-2-b.dtb by rpikernelhack'
+Removing 'diversion of /boot/bcm2710-rpi-3-b-plus.dtb to /usr/share/rpikernelhack/bcm2710-rpi-3-b-plus.dtb by rpikernelhack'
+Removing 'diversion of /boot/bcm2710-rpi-3-b.dtb to /usr/share/rpikernelhack/bcm2710-rpi-3-b.dtb by rpikernelhack'
+Removing 'diversion of /boot/bcm2710-rpi-cm3.dtb to /usr/share/rpikernelhack/bcm2710-rpi-cm3.dtb by rpikernelhack'
+Removing 'diversion of /boot/bcm2710-rpi-zero-2-w.dtb to /usr/share/rpikernelhack/bcm2710-rpi-zero-2-w.dtb by rpikernelhack'
+Removing 'diversion of /boot/bcm2710-rpi-zero-2.dtb to /usr/share/rpikernelhack/bcm2710-rpi-zero-2.dtb by rpikernelhack'
+Removing 'diversion of /boot/bcm2711-rpi-4-b.dtb to /usr/share/rpikernelhack/bcm2711-rpi-4-b.dtb by rpikernelhack'
+Removing 'diversion of /boot/bcm2711-rpi-400.dtb to /usr/share/rpikernelhack/bcm2711-rpi-400.dtb by rpikernelhack'
+Removing 'diversion of /boot/bcm2711-rpi-cm4.dtb to /usr/share/rpikernelhack/bcm2711-rpi-cm4.dtb by rpikernelhack'
+Removing 'diversion of /boot/COPYING.linux to /usr/share/rpikernelhack/COPYING.linux by rpikernelhack'
+Removing 'diversion of /boot/overlays/README to /usr/share/rpikernelhack/overlays/README by rpikernelhack'
+Removing 'diversion of /boot/overlays/act-led.dtbo to /usr/share/rpikernelhack/overlays/act-led.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/adafruit-st7735r.dtbo to /usr/share/rpikernelhack/overlays/adafruit-st7735r.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/adafruit18.dtbo to /usr/share/rpikernelhack/overlays/adafruit18.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/adau1977-adc.dtbo to /usr/share/rpikernelhack/overlays/adau1977-adc.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/adau7002-simple.dtbo to /usr/share/rpikernelhack/overlays/adau7002-simple.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/ads1015.dtbo to /usr/share/rpikernelhack/overlays/ads1015.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/ads1115.dtbo to /usr/share/rpikernelhack/overlays/ads1115.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/ads7846.dtbo to /usr/share/rpikernelhack/overlays/ads7846.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/adv7282m.dtbo to /usr/share/rpikernelhack/overlays/adv7282m.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/adv728x-m.dtbo to /usr/share/rpikernelhack/overlays/adv728x-m.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/akkordion-iqdacplus.dtbo to /usr/share/rpikernelhack/overlays/akkordion-iqdacplus.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/allo-boss-dac-pcm512x-audio.dtbo to /usr/share/rpikernelhack/overlays/allo-boss-dac-pcm512x-audio.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/allo-boss2-dac-audio.dtbo to /usr/share/rpikernelhack/overlays/allo-boss2-dac-audio.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/allo-digione.dtbo to /usr/share/rpikernelhack/overlays/allo-digione.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/allo-katana-dac-audio.dtbo to /usr/share/rpikernelhack/overlays/allo-katana-dac-audio.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/allo-piano-dac-pcm512x-audio.dtbo to /usr/share/rpikernelhack/overlays/allo-piano-dac-pcm512x-audio.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/allo-piano-dac-plus-pcm512x-audio.dtbo to /usr/share/rpikernelhack/overlays/allo-piano-dac-plus-pcm512x-audio.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/anyspi.dtbo to /usr/share/rpikernelhack/overlays/anyspi.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/apds9960.dtbo to /usr/share/rpikernelhack/overlays/apds9960.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/applepi-dac.dtbo to /usr/share/rpikernelhack/overlays/applepi-dac.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/at86rf233.dtbo to /usr/share/rpikernelhack/overlays/at86rf233.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/audioinjector-addons.dtbo to /usr/share/rpikernelhack/overlays/audioinjector-addons.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/audioinjector-isolated-soundcard.dtbo to /usr/share/rpikernelhack/overlays/audioinjector-isolated-soundcard.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/audioinjector-ultra.dtbo to /usr/share/rpikernelhack/overlays/audioinjector-ultra.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/audioinjector-wm8731-audio.dtbo to /usr/share/rpikernelhack/overlays/audioinjector-wm8731-audio.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/audiosense-pi.dtbo to /usr/share/rpikernelhack/overlays/audiosense-pi.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/audremap.dtbo to /usr/share/rpikernelhack/overlays/audremap.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/balena-fin.dtbo to /usr/share/rpikernelhack/overlays/balena-fin.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/cap1106.dtbo to /usr/share/rpikernelhack/overlays/cap1106.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/chipdip-dac.dtbo to /usr/share/rpikernelhack/overlays/chipdip-dac.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/cma.dtbo to /usr/share/rpikernelhack/overlays/cma.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/dht11.dtbo to /usr/share/rpikernelhack/overlays/dht11.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/dionaudio-loco-v2.dtbo to /usr/share/rpikernelhack/overlays/dionaudio-loco-v2.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/dionaudio-loco.dtbo to /usr/share/rpikernelhack/overlays/dionaudio-loco.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/disable-bt.dtbo to /usr/share/rpikernelhack/overlays/disable-bt.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/disable-wifi.dtbo to /usr/share/rpikernelhack/overlays/disable-wifi.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/dpi18.dtbo to /usr/share/rpikernelhack/overlays/dpi18.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/dpi18cpadhi.dtbo to /usr/share/rpikernelhack/overlays/dpi18cpadhi.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/dpi24.dtbo to /usr/share/rpikernelhack/overlays/dpi24.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/draws.dtbo to /usr/share/rpikernelhack/overlays/draws.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/dwc-otg.dtbo to /usr/share/rpikernelhack/overlays/dwc-otg.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/dwc2.dtbo to /usr/share/rpikernelhack/overlays/dwc2.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/edt-ft5406.dtbo to /usr/share/rpikernelhack/overlays/edt-ft5406.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/enc28j60-spi2.dtbo to /usr/share/rpikernelhack/overlays/enc28j60-spi2.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/enc28j60.dtbo to /usr/share/rpikernelhack/overlays/enc28j60.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/exc3000.dtbo to /usr/share/rpikernelhack/overlays/exc3000.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/fe-pi-audio.dtbo to /usr/share/rpikernelhack/overlays/fe-pi-audio.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/fsm-demo.dtbo to /usr/share/rpikernelhack/overlays/fsm-demo.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/ghost-amp.dtbo to /usr/share/rpikernelhack/overlays/ghost-amp.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/goodix.dtbo to /usr/share/rpikernelhack/overlays/goodix.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/googlevoicehat-soundcard.dtbo to /usr/share/rpikernelhack/overlays/googlevoicehat-soundcard.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/gpio-fan.dtbo to /usr/share/rpikernelhack/overlays/gpio-fan.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/gpio-ir-tx.dtbo to /usr/share/rpikernelhack/overlays/gpio-ir-tx.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/gpio-ir.dtbo to /usr/share/rpikernelhack/overlays/gpio-ir.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/gpio-key.dtbo to /usr/share/rpikernelhack/overlays/gpio-key.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/gpio-led.dtbo to /usr/share/rpikernelhack/overlays/gpio-led.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/gpio-no-bank0-irq.dtbo to /usr/share/rpikernelhack/overlays/gpio-no-bank0-irq.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/gpio-no-irq.dtbo to /usr/share/rpikernelhack/overlays/gpio-no-irq.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/gpio-poweroff.dtbo to /usr/share/rpikernelhack/overlays/gpio-poweroff.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/gpio-shutdown.dtbo to /usr/share/rpikernelhack/overlays/gpio-shutdown.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/hd44780-lcd.dtbo to /usr/share/rpikernelhack/overlays/hd44780-lcd.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/hdmi-backlight-hwhack-gpio.dtbo to /usr/share/rpikernelhack/overlays/hdmi-backlight-hwhack-gpio.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/hifiberry-amp.dtbo to /usr/share/rpikernelhack/overlays/hifiberry-amp.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/hifiberry-amp100.dtbo to /usr/share/rpikernelhack/overlays/hifiberry-amp100.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/hifiberry-dac.dtbo to /usr/share/rpikernelhack/overlays/hifiberry-dac.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/hifiberry-dacplus.dtbo to /usr/share/rpikernelhack/overlays/hifiberry-dacplus.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/hifiberry-dacplusadc.dtbo to /usr/share/rpikernelhack/overlays/hifiberry-dacplusadc.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/hifiberry-dacplusadcpro.dtbo to /usr/share/rpikernelhack/overlays/hifiberry-dacplusadcpro.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/hifiberry-dacplusdsp.dtbo to /usr/share/rpikernelhack/overlays/hifiberry-dacplusdsp.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/hifiberry-dacplushd.dtbo to /usr/share/rpikernelhack/overlays/hifiberry-dacplushd.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/hifiberry-digi-pro.dtbo to /usr/share/rpikernelhack/overlays/hifiberry-digi-pro.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/hifiberry-digi.dtbo to /usr/share/rpikernelhack/overlays/hifiberry-digi.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/highperi.dtbo to /usr/share/rpikernelhack/overlays/highperi.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/hy28a.dtbo to /usr/share/rpikernelhack/overlays/hy28a.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/hy28b-2017.dtbo to /usr/share/rpikernelhack/overlays/hy28b-2017.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/hy28b.dtbo to /usr/share/rpikernelhack/overlays/hy28b.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/i-sabre-q2m.dtbo to /usr/share/rpikernelhack/overlays/i-sabre-q2m.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/i2c-bcm2708.dtbo to /usr/share/rpikernelhack/overlays/i2c-bcm2708.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/i2c-gpio.dtbo to /usr/share/rpikernelhack/overlays/i2c-gpio.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/i2c-mux.dtbo to /usr/share/rpikernelhack/overlays/i2c-mux.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/i2c-pwm-pca9685a.dtbo to /usr/share/rpikernelhack/overlays/i2c-pwm-pca9685a.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/i2c-rtc-gpio.dtbo to /usr/share/rpikernelhack/overlays/i2c-rtc-gpio.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/i2c-rtc.dtbo to /usr/share/rpikernelhack/overlays/i2c-rtc.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/i2c-sensor.dtbo to /usr/share/rpikernelhack/overlays/i2c-sensor.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/i2c0.dtbo to /usr/share/rpikernelhack/overlays/i2c0.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/i2c1.dtbo to /usr/share/rpikernelhack/overlays/i2c1.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/i2c3.dtbo to /usr/share/rpikernelhack/overlays/i2c3.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/i2c4.dtbo to /usr/share/rpikernelhack/overlays/i2c4.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/i2c5.dtbo to /usr/share/rpikernelhack/overlays/i2c5.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/i2c6.dtbo to /usr/share/rpikernelhack/overlays/i2c6.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/i2s-gpio28-31.dtbo to /usr/share/rpikernelhack/overlays/i2s-gpio28-31.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/ilitek251x.dtbo to /usr/share/rpikernelhack/overlays/ilitek251x.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/imx219.dtbo to /usr/share/rpikernelhack/overlays/imx219.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/imx290.dtbo to /usr/share/rpikernelhack/overlays/imx290.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/imx378.dtbo to /usr/share/rpikernelhack/overlays/imx378.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/imx477.dtbo to /usr/share/rpikernelhack/overlays/imx477.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/imx519.dtbo to /usr/share/rpikernelhack/overlays/imx519.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/iqaudio-codec.dtbo to /usr/share/rpikernelhack/overlays/iqaudio-codec.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/iqaudio-dac.dtbo to /usr/share/rpikernelhack/overlays/iqaudio-dac.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/iqaudio-dacplus.dtbo to /usr/share/rpikernelhack/overlays/iqaudio-dacplus.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/iqaudio-digi-wm8804-audio.dtbo to /usr/share/rpikernelhack/overlays/iqaudio-digi-wm8804-audio.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/irs1125.dtbo to /usr/share/rpikernelhack/overlays/irs1125.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/jedec-spi-nor.dtbo to /usr/share/rpikernelhack/overlays/jedec-spi-nor.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/justboom-both.dtbo to /usr/share/rpikernelhack/overlays/justboom-both.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/justboom-dac.dtbo to /usr/share/rpikernelhack/overlays/justboom-dac.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/justboom-digi.dtbo to /usr/share/rpikernelhack/overlays/justboom-digi.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/ltc294x.dtbo to /usr/share/rpikernelhack/overlays/ltc294x.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/max98357a.dtbo to /usr/share/rpikernelhack/overlays/max98357a.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/maxtherm.dtbo to /usr/share/rpikernelhack/overlays/maxtherm.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/mbed-dac.dtbo to /usr/share/rpikernelhack/overlays/mbed-dac.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/mcp23017.dtbo to /usr/share/rpikernelhack/overlays/mcp23017.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/mcp23s17.dtbo to /usr/share/rpikernelhack/overlays/mcp23s17.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/mcp2515-can0.dtbo to /usr/share/rpikernelhack/overlays/mcp2515-can0.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/mcp2515-can1.dtbo to /usr/share/rpikernelhack/overlays/mcp2515-can1.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/mcp2515.dtbo to /usr/share/rpikernelhack/overlays/mcp2515.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/mcp251xfd.dtbo to /usr/share/rpikernelhack/overlays/mcp251xfd.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/mcp3008.dtbo to /usr/share/rpikernelhack/overlays/mcp3008.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/mcp3202.dtbo to /usr/share/rpikernelhack/overlays/mcp3202.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/mcp342x.dtbo to /usr/share/rpikernelhack/overlays/mcp342x.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/media-center.dtbo to /usr/share/rpikernelhack/overlays/media-center.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/merus-amp.dtbo to /usr/share/rpikernelhack/overlays/merus-amp.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/midi-uart0.dtbo to /usr/share/rpikernelhack/overlays/midi-uart0.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/midi-uart1.dtbo to /usr/share/rpikernelhack/overlays/midi-uart1.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/midi-uart2.dtbo to /usr/share/rpikernelhack/overlays/midi-uart2.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/midi-uart3.dtbo to /usr/share/rpikernelhack/overlays/midi-uart3.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/midi-uart4.dtbo to /usr/share/rpikernelhack/overlays/midi-uart4.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/midi-uart5.dtbo to /usr/share/rpikernelhack/overlays/midi-uart5.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/minipitft13.dtbo to /usr/share/rpikernelhack/overlays/minipitft13.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/miniuart-bt.dtbo to /usr/share/rpikernelhack/overlays/miniuart-bt.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/mlx90640.dtbo to /usr/share/rpikernelhack/overlays/mlx90640.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/mmc.dtbo to /usr/share/rpikernelhack/overlays/mmc.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/mpu6050.dtbo to /usr/share/rpikernelhack/overlays/mpu6050.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/mz61581.dtbo to /usr/share/rpikernelhack/overlays/mz61581.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/ov5647.dtbo to /usr/share/rpikernelhack/overlays/ov5647.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/ov7251.dtbo to /usr/share/rpikernelhack/overlays/ov7251.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/ov9281.dtbo to /usr/share/rpikernelhack/overlays/ov9281.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/overlay_map.dtb to /usr/share/rpikernelhack/overlays/overlay_map.dtb by rpikernelhack'
+Removing 'diversion of /boot/overlays/papirus.dtbo to /usr/share/rpikernelhack/overlays/papirus.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/pca953x.dtbo to /usr/share/rpikernelhack/overlays/pca953x.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/pcie-32bit-dma.dtbo to /usr/share/rpikernelhack/overlays/pcie-32bit-dma.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/pibell.dtbo to /usr/share/rpikernelhack/overlays/pibell.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/pifacedigital.dtbo to /usr/share/rpikernelhack/overlays/pifacedigital.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/pifi-40.dtbo to /usr/share/rpikernelhack/overlays/pifi-40.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/pifi-dac-hd.dtbo to /usr/share/rpikernelhack/overlays/pifi-dac-hd.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/pifi-dac-zero.dtbo to /usr/share/rpikernelhack/overlays/pifi-dac-zero.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/pifi-mini-210.dtbo to /usr/share/rpikernelhack/overlays/pifi-mini-210.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/piglow.dtbo to /usr/share/rpikernelhack/overlays/piglow.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/piscreen.dtbo to /usr/share/rpikernelhack/overlays/piscreen.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/piscreen2r.dtbo to /usr/share/rpikernelhack/overlays/piscreen2r.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/pisound.dtbo to /usr/share/rpikernelhack/overlays/pisound.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/pitft22.dtbo to /usr/share/rpikernelhack/overlays/pitft22.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/pitft28-capacitive.dtbo to /usr/share/rpikernelhack/overlays/pitft28-capacitive.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/pitft28-resistive.dtbo to /usr/share/rpikernelhack/overlays/pitft28-resistive.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/pitft35-resistive.dtbo to /usr/share/rpikernelhack/overlays/pitft35-resistive.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/pps-gpio.dtbo to /usr/share/rpikernelhack/overlays/pps-gpio.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/pwm-2chan.dtbo to /usr/share/rpikernelhack/overlays/pwm-2chan.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/pwm-ir-tx.dtbo to /usr/share/rpikernelhack/overlays/pwm-ir-tx.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/pwm.dtbo to /usr/share/rpikernelhack/overlays/pwm.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/qca7000-uart0.dtbo to /usr/share/rpikernelhack/overlays/qca7000-uart0.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/qca7000.dtbo to /usr/share/rpikernelhack/overlays/qca7000.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/rotary-encoder.dtbo to /usr/share/rpikernelhack/overlays/rotary-encoder.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/rpi-backlight.dtbo to /usr/share/rpikernelhack/overlays/rpi-backlight.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/rpi-cirrus-wm5102.dtbo to /usr/share/rpikernelhack/overlays/rpi-cirrus-wm5102.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/rpi-dac.dtbo to /usr/share/rpikernelhack/overlays/rpi-dac.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/rpi-display.dtbo to /usr/share/rpikernelhack/overlays/rpi-display.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/rpi-ft5406.dtbo to /usr/share/rpikernelhack/overlays/rpi-ft5406.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/rpi-poe-plus.dtbo to /usr/share/rpikernelhack/overlays/rpi-poe-plus.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/rpi-poe.dtbo to /usr/share/rpikernelhack/overlays/rpi-poe.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/rpi-proto.dtbo to /usr/share/rpikernelhack/overlays/rpi-proto.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/rpi-sense.dtbo to /usr/share/rpikernelhack/overlays/rpi-sense.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/rpi-tv.dtbo to /usr/share/rpikernelhack/overlays/rpi-tv.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/rpivid-v4l2.dtbo to /usr/share/rpikernelhack/overlays/rpivid-v4l2.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/rra-digidac1-wm8741-audio.dtbo to /usr/share/rpikernelhack/overlays/rra-digidac1-wm8741-audio.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/sainsmart18.dtbo to /usr/share/rpikernelhack/overlays/sainsmart18.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/sc16is750-i2c.dtbo to /usr/share/rpikernelhack/overlays/sc16is750-i2c.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/sc16is752-i2c.dtbo to /usr/share/rpikernelhack/overlays/sc16is752-i2c.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/sc16is752-spi0.dtbo to /usr/share/rpikernelhack/overlays/sc16is752-spi0.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/sc16is752-spi1.dtbo to /usr/share/rpikernelhack/overlays/sc16is752-spi1.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/sdhost.dtbo to /usr/share/rpikernelhack/overlays/sdhost.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/sdio.dtbo to /usr/share/rpikernelhack/overlays/sdio.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/seeed-can-fd-hat-v1.dtbo to /usr/share/rpikernelhack/overlays/seeed-can-fd-hat-v1.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/seeed-can-fd-hat-v2.dtbo to /usr/share/rpikernelhack/overlays/seeed-can-fd-hat-v2.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/sh1106-spi.dtbo to /usr/share/rpikernelhack/overlays/sh1106-spi.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/si446x-spi0.dtbo to /usr/share/rpikernelhack/overlays/si446x-spi0.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/smi-dev.dtbo to /usr/share/rpikernelhack/overlays/smi-dev.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/smi-nand.dtbo to /usr/share/rpikernelhack/overlays/smi-nand.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/smi.dtbo to /usr/share/rpikernelhack/overlays/smi.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/spi-gpio35-39.dtbo to /usr/share/rpikernelhack/overlays/spi-gpio35-39.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/spi-gpio40-45.dtbo to /usr/share/rpikernelhack/overlays/spi-gpio40-45.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/spi-rtc.dtbo to /usr/share/rpikernelhack/overlays/spi-rtc.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/spi0-1cs.dtbo to /usr/share/rpikernelhack/overlays/spi0-1cs.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/spi0-2cs.dtbo to /usr/share/rpikernelhack/overlays/spi0-2cs.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/spi1-1cs.dtbo to /usr/share/rpikernelhack/overlays/spi1-1cs.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/spi1-2cs.dtbo to /usr/share/rpikernelhack/overlays/spi1-2cs.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/spi1-3cs.dtbo to /usr/share/rpikernelhack/overlays/spi1-3cs.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/spi2-1cs.dtbo to /usr/share/rpikernelhack/overlays/spi2-1cs.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/spi2-2cs.dtbo to /usr/share/rpikernelhack/overlays/spi2-2cs.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/spi2-3cs.dtbo to /usr/share/rpikernelhack/overlays/spi2-3cs.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/spi3-1cs.dtbo to /usr/share/rpikernelhack/overlays/spi3-1cs.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/spi3-2cs.dtbo to /usr/share/rpikernelhack/overlays/spi3-2cs.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/spi4-1cs.dtbo to /usr/share/rpikernelhack/overlays/spi4-1cs.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/spi4-2cs.dtbo to /usr/share/rpikernelhack/overlays/spi4-2cs.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/spi5-1cs.dtbo to /usr/share/rpikernelhack/overlays/spi5-1cs.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/spi5-2cs.dtbo to /usr/share/rpikernelhack/overlays/spi5-2cs.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/spi6-1cs.dtbo to /usr/share/rpikernelhack/overlays/spi6-1cs.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/spi6-2cs.dtbo to /usr/share/rpikernelhack/overlays/spi6-2cs.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/ssd1306-spi.dtbo to /usr/share/rpikernelhack/overlays/ssd1306-spi.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/ssd1306.dtbo to /usr/share/rpikernelhack/overlays/ssd1306.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/ssd1331-spi.dtbo to /usr/share/rpikernelhack/overlays/ssd1331-spi.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/ssd1351-spi.dtbo to /usr/share/rpikernelhack/overlays/ssd1351-spi.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/superaudioboard.dtbo to /usr/share/rpikernelhack/overlays/superaudioboard.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/sx150x.dtbo to /usr/share/rpikernelhack/overlays/sx150x.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/tc358743-audio.dtbo to /usr/share/rpikernelhack/overlays/tc358743-audio.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/tc358743.dtbo to /usr/share/rpikernelhack/overlays/tc358743.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/tinylcd35.dtbo to /usr/share/rpikernelhack/overlays/tinylcd35.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/tpm-slb9670.dtbo to /usr/share/rpikernelhack/overlays/tpm-slb9670.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/uart0.dtbo to /usr/share/rpikernelhack/overlays/uart0.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/uart1.dtbo to /usr/share/rpikernelhack/overlays/uart1.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/uart2.dtbo to /usr/share/rpikernelhack/overlays/uart2.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/uart3.dtbo to /usr/share/rpikernelhack/overlays/uart3.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/uart4.dtbo to /usr/share/rpikernelhack/overlays/uart4.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/uart5.dtbo to /usr/share/rpikernelhack/overlays/uart5.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/udrc.dtbo to /usr/share/rpikernelhack/overlays/udrc.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/ugreen-dabboard.dtbo to /usr/share/rpikernelhack/overlays/ugreen-dabboard.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/upstream-pi4.dtbo to /usr/share/rpikernelhack/overlays/upstream-pi4.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/upstream.dtbo to /usr/share/rpikernelhack/overlays/upstream.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/vc4-fkms-v3d-pi4.dtbo to /usr/share/rpikernelhack/overlays/vc4-fkms-v3d-pi4.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/vc4-fkms-v3d.dtbo to /usr/share/rpikernelhack/overlays/vc4-fkms-v3d.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/vc4-kms-dpi-at056tn53v1.dtbo to /usr/share/rpikernelhack/overlays/vc4-kms-dpi-at056tn53v1.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/vc4-kms-dsi-7inch.dtbo to /usr/share/rpikernelhack/overlays/vc4-kms-dsi-7inch.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/vc4-kms-dsi-lt070me05000-v2.dtbo to /usr/share/rpikernelhack/overlays/vc4-kms-dsi-lt070me05000-v2.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/vc4-kms-dsi-lt070me05000.dtbo to /usr/share/rpikernelhack/overlays/vc4-kms-dsi-lt070me05000.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/vc4-kms-kippah-7inch.dtbo to /usr/share/rpikernelhack/overlays/vc4-kms-kippah-7inch.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/vc4-kms-v3d-pi4.dtbo to /usr/share/rpikernelhack/overlays/vc4-kms-v3d-pi4.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/vc4-kms-v3d.dtbo to /usr/share/rpikernelhack/overlays/vc4-kms-v3d.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/vc4-kms-vga666.dtbo to /usr/share/rpikernelhack/overlays/vc4-kms-vga666.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/vga666.dtbo to /usr/share/rpikernelhack/overlays/vga666.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/w1-gpio-pullup.dtbo to /usr/share/rpikernelhack/overlays/w1-gpio-pullup.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/w1-gpio.dtbo to /usr/share/rpikernelhack/overlays/w1-gpio.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/w5500.dtbo to /usr/share/rpikernelhack/overlays/w5500.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/wittypi.dtbo to /usr/share/rpikernelhack/overlays/wittypi.dtbo by rpikernelhack'
+Removing 'diversion of /boot/overlays/wm8960-soundcard.dtbo to /usr/share/rpikernelhack/overlays/wm8960-soundcard.dtbo by rpikernelhack'
+run-parts: executing /etc/kernel/postinst.d/apt-auto-removal 5.10.63+ /boot/kernel.img
+run-parts: executing /etc/kernel/postinst.d/initramfs-tools 5.10.63+ /boot/kernel.img
+run-parts: executing /etc/kernel/postinst.d/unattended-upgrades 5.10.63+ /boot/kernel.img
+run-parts: executing /etc/kernel/postinst.d/apt-auto-removal 5.10.63-v7+ /boot/kernel7.img
+run-parts: executing /etc/kernel/postinst.d/initramfs-tools 5.10.63-v7+ /boot/kernel7.img
+run-parts: executing /etc/kernel/postinst.d/unattended-upgrades 5.10.63-v7+ /boot/kernel7.img
+run-parts: executing /etc/kernel/postinst.d/apt-auto-removal 5.10.63-v7l+ /boot/kernel7l.img
+run-parts: executing /etc/kernel/postinst.d/initramfs-tools 5.10.63-v7l+ /boot/kernel7l.img
+run-parts: executing /etc/kernel/postinst.d/unattended-upgrades 5.10.63-v7l+ /boot/kernel7l.img
+run-parts: executing /etc/kernel/postinst.d/apt-auto-removal 5.10.63-v8+ /boot/kernel8.img
+run-parts: executing /etc/kernel/postinst.d/initramfs-tools 5.10.63-v8+ /boot/kernel8.img
+run-parts: executing /etc/kernel/postinst.d/unattended-upgrades 5.10.63-v8+ /boot/kernel8.img
+Setting up ntfs-3g (1:2017.3.23AR.3-3+deb10u1) ...
+Setting up libc6-dbg:armhf (2.28-10+rpt2+rpi1) ...
+Setting up libasound2-data (1.1.8-1+rpt2) ...
+Setting up wpasupplicant (2:2.7+git20190128+0c1e29f-6+deb10u3) ...
+Setting up libklibc:armhf (2.0.6-1+rpi1+deb10u1) ...
+Setting up firmware-brcm80211 (1:20190114-2+rpt4) ...
+Setting up firmware-realtek (1:20190114-2+rpt4) ...
+update-initramfs: deferring update (trigger activated)
+Setting up rpi-update (20210618) ...
+Setting up debconf-utils (1.5.71+deb10u1) ...
+Setting up udev (241-7~deb10u8+rpi1) ...
+update-initramfs: deferring update (trigger activated)
+insserv: FATAL: service mountkernfs has to be enabled to use service udev
+Setting up raspberrypi-bootloader (1:1.20211201~buster-1) ...
+Removing 'diversion of /boot/start.elf to /usr/share/rpikernelhack/start.elf by rpikernelhack'
+Removing 'diversion of /boot/start_cd.elf to /usr/share/rpikernelhack/start_cd.elf by rpikernelhack'
+Removing 'diversion of /boot/start_db.elf to /usr/share/rpikernelhack/start_db.elf by rpikernelhack'
+Removing 'diversion of /boot/start_x.elf to /usr/share/rpikernelhack/start_x.elf by rpikernelhack'
+Removing 'diversion of /boot/fixup.dat to /usr/share/rpikernelhack/fixup.dat by rpikernelhack'
+Removing 'diversion of /boot/fixup_cd.dat to /usr/share/rpikernelhack/fixup_cd.dat by rpikernelhack'
+Removing 'diversion of /boot/fixup_db.dat to /usr/share/rpikernelhack/fixup_db.dat by rpikernelhack'
+Removing 'diversion of /boot/fixup_x.dat to /usr/share/rpikernelhack/fixup_x.dat by rpikernelhack'
+Removing 'diversion of /boot/bootcode.bin to /usr/share/rpikernelhack/bootcode.bin by rpikernelhack'
+Removing 'diversion of /boot/start4.elf to /usr/share/rpikernelhack/start4.elf by rpikernelhack'
+Removing 'diversion of /boot/start4cd.elf to /usr/share/rpikernelhack/start4cd.elf by rpikernelhack'
+Removing 'diversion of /boot/start4db.elf to /usr/share/rpikernelhack/start4db.elf by rpikernelhack'
+Removing 'diversion of /boot/start4x.elf to /usr/share/rpikernelhack/start4x.elf by rpikernelhack'
+Removing 'diversion of /boot/fixup4.dat to /usr/share/rpikernelhack/fixup4.dat by rpikernelhack'
+Removing 'diversion of /boot/fixup4cd.dat to /usr/share/rpikernelhack/fixup4cd.dat by rpikernelhack'
+Removing 'diversion of /boot/fixup4db.dat to /usr/share/rpikernelhack/fixup4db.dat by rpikernelhack'
+Removing 'diversion of /boot/fixup4x.dat to /usr/share/rpikernelhack/fixup4x.dat by rpikernelhack'
+Removing 'diversion of /boot/LICENCE.broadcom to /usr/share/rpikernelhack/LICENCE.broadcom by rpikernelhack'
+Setting up raspberrypi-net-mods (1.3.2) ...
+Setting up php7.3-xml (7.3.31-1~deb10u1) ...
+Setting up libisc-export1100:armhf (1:9.11.5.P4+dfsg-5.1+deb10u6) ...
+Setting up libraspberrypi0 (1:1.20211201~buster-1) ...
+Setting up firmware-libertas (1:20190114-2+rpt4) ...
+Setting up libasound2:armhf (1.1.8-1+rpt2) ...
+Setting up libpam-systemd:armhf (241-7~deb10u8+rpi1) ...
+Setting up isc-dhcp-common (4.4.1-2+deb10u1) ...
+Setting up klibc-utils (2.0.6-1+rpi1+deb10u1) ...
+Setting up php7.3-curl (7.3.31-1~deb10u1) ...
+Setting up libdns-export1104 (1:9.11.5.P4+dfsg-5.1+deb10u6) ...
+Setting up iputils-ping (3:20180629-2+deb10u2) ...
+Setting up libjs-underscore (1.9.1~dfsg-1+deb10u1) ...
+Setting up php7.3-gd (7.3.31-1~deb10u1) ...
+Setting up isc-dhcp-client (4.4.1-2+deb10u1) ...
+Setting up libraspberrypi-doc (1:1.20211201~buster-1) ...
+Setting up libraspberrypi-bin (1:1.20211201~buster-1) ...
+Setting up alsa-utils (1.1.8-2+rpt1) ...
+Setting up bluez (5.50-1.2~deb10u2+rpt1) ...
+Setting up libraspberrypi-dev (1:1.20211201~buster-1) ...
+Setting up rpi-eeprom (13.3-1~buster) ...
+Setting up pi-bluetooth (0.1.18) ...
+Processing triggers for systemd (241-7~deb10u8+rpi1) ...
+Processing triggers for man-db (2.8.5-2) ...
+Processing triggers for ntp (1:4.2.8p12+dfsg-4) ...
+Processing triggers for dbus (1.12.20-0+deb10u1) ...
+Processing triggers for install-info (6.5.0.dfsg.1-4+b1) ...
+Processing triggers for mime-support (3.62) ...
+Processing triggers for initramfs-tools (0.133+deb10u1) ...
+Processing triggers for php7.3-fpm (7.3.31-1~deb10u1) ...
+Processing triggers for libc-bin (2.28-10+rpt2+rpi1) ...
+root@yunohost:~# sudo reboot now
+Connection to 192.168.1.4 closed by remote host.
+Connection to 192.168.1.4 closed.
+
+
+user@laptop:~$ sudo dd if=/dev/sdb of=220118_1507_backup.img status=progress
+[sudo] password for user: 
+31677551104 bytes (32 GB, 30 GiB) copied, 1636 s, 19.4 MB/s
+61896704+0 records in
+61896704+0 records out
+31691112448 bytes (32 GB, 30 GiB) copied, 1636.77 s, 19.4 MB/s
+

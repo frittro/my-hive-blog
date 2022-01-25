@@ -1,0 +1,71 @@
+$ sudo dd if=/dev/zero of=/dev/sdb bs=4096 status=progress
+[sudo] password for sysop: 
+15928639488 bytes (16 GB, 15 GiB) copied, 1285 s, 12.4 MB/s
+dd: error writing '/dev/sdb': No space left on device
+3889537+0 records in
+3889536+0 records out
+15931539456 bytes (16 GB, 15 GiB) copied, 1285.23 s, 12.4 MB/s
+$ cd ~/dev/rpi/deployment/test-fmds.noho.st
+$ wget https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip
+--2022-01-16 14:03:07--  https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip
+Resolving build.yunohost.org (build.yunohost.org)... 2001:910:1410::1, 80.67.172.144
+Connecting to build.yunohost.org (build.yunohost.org)|2001:910:1410::1|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 682245487 (651M) [application/zip]
+Saving to: ‘yunohost-buster-4.1.7.2-rpi-stable.img.zip’
+
+yunohost-buster-4.1.7.2-rpi-sta 100%[====================================================>] 650.64M   101KB/s    in 64m 50s 
+
+2022-01-16 15:07:59 (171 KB/s) - ‘yunohost-buster-4.1.7.2-rpi-stable.img.zip’ saved [682245487/682245487]
+
+$ wget https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip.sha256sum
+--2022-01-16 16:13:52--  https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip.sha256sum
+Resolving build.yunohost.org (build.yunohost.org)... 2001:910:1410::1, 80.67.172.144
+Connecting to build.yunohost.org (build.yunohost.org)|2001:910:1410::1|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 109 [application/octet-stream]
+Saving to: ‘yunohost-buster-4.1.7.2-rpi-stable.img.zip.sha256sum’
+
+yunohost-buster-4.1.7.2-rpi-sta 100%[====================================================>]     109  --.-KB/s    in 0s      
+
+2022-01-16 16:13:54 (6.99 MB/s) - ‘yunohost-buster-4.1.7.2-rpi-stable.img.zip.sha256sum’ saved [109/109]
+
+$ wget https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip.sig
+--2022-01-16 16:15:29--  https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip.sig
+Resolving build.yunohost.org (build.yunohost.org)... 2001:910:1410::1, 80.67.172.144
+Connecting to build.yunohost.org (build.yunohost.org)|2001:910:1410::1|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 310 [application/octet-stream]
+Saving to: ‘yunohost-buster-4.1.7.2-rpi-stable.img.zip.sig’
+
+yunohost-buster-4.1.7.2-rpi-sta 100%[====================================================>]     310  --.-KB/s    in 0s      
+
+2022-01-16 16:15:30 (14.4 MB/s) - ‘yunohost-buster-4.1.7.2-rpi-stable.img.zip.sig’ saved [310/310]
+
+$ sha256sum -c yunohost-buster-4.1.7.2-rpi-stable.img.zip.sha256sum
+yunohost-buster-4.1.7.2-rpi-stable.img.zip: OK
+$ gpg --edit-key build@yunohost.org
+gpg (GnuPG) 2.2.19; Copyright (C) 2019 Free Software Foundation, Inc.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+
+pub  rsa2048/360AAF3259A3E6FF
+     created: 2012-04-17  expires: never       usage: SC  
+     trust: unknown       validity: full
+sub  rsa2048/CE7406516D9CFB3A
+     created: 2012-04-17  expires: never       usage: E   
+[  full  ] (1). YunoHost <build@yunohost.org>
+
+gpg> fpr
+pub   rsa2048/360AAF3259A3E6FF 2012-04-17 YunoHost <build@yunohost.org>
+ Primary key fingerprint: 1904 C5B4 2E48 56DC D4E9  CF96 360A AF32 59A3 E6FF
+
+gpg> quit
+
+$ unzip yunohost-buster-4.1.7.2-rpi-stable.img.zip | sudo dd of=/dev/sdb bs=64k oflag=dsync status=progress
+[sudo] password for sysop: 
+102 bytes copied, 96 s, 0.0 kB/s
+0+2 records in
+0+2 records out
+102 bytes copied, 96.2463 s, 0.0 kB/s

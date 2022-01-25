@@ -1,0 +1,94 @@
+<!-- @format -->
+
+<!--
+
+Community: hive-163521 (STEMGeeks)
+
+Title: Deploying YunoHost v4.1.7.2 onto the µSD-card
+
+Tags (Content, Community, Tribe): stem, linux, homelab, raspberrypi, yunohost, techsupport, silverbloggers, proofofbrain
+
+-->
+
+<!-- post begins -->
+<div class="text-justify">
+  <p>
+    <center>
+      <img src="https://images.ecency.com/DQmSEcadVAvffUn2365CgUM9wUYC4EbWUDMCWWiv1YnjqR5/post_head.png"/>
+    </center>
+  </p>
+  <p>
+    <em>Post summary goes here. 
+    <hr/>
+    <ul>
+      <li><strong>Stage: </strong>Deploy test-fmds.noho.st</li>
+      <li><strong>Milestone: </strong>YunoHost v4.3.4.2 is fully installed on test-fmds.noho.st</li>
+      <li><strong>Task: </strong>Deploying YunoHost v4.1.7.2 onto the µSD-card</li>
+    </ul> 
+    </em>
+  </p>
+  <p>
+    <center>
+      <img src="https://images.ecency.com/DQmdk1kErvvHhZVAaQHHZyu8GcnVw6KQz9CPs2voEHh2YGn/maori_divider.png"/>
+    </center>
+  </p>
+  <h1>Deploying YunoHost v4.1.7.2 onto the µSD-card.</h1>
+  <h2>Hardware that I'll be using for this task.</h2>
+  <p><div class="pull-left"><img src="https://images.ecency.com/DQmZa78X7LTrjguwbRWbWFH38Wk2a5t1xSDEMyGPGHtiMcH/raspi4b.png"/></div><strong>Raspberry Pi 4B – </strong>This is the <a href="https://www.pbtech.co.nz/product/SEVRBP0267/" target="_blank">8GB model</a>, top-of-the-range device, which I purchased last year for $ⁿᶻ125.00, plus the case and fan. This particular device is in an official <a href="https://www.pbtech.co.nz/product/SEVRBP0212/" target="_blank">red and white Raspberry Pi plastic case</a>, with an official <a href="https://www.pbtech.co.nz/product/SEVRBP0298/" target="_blank">heatsink and fan</a>.</p>
+  <hr/>
+  <p><div class="pull-right"><img src="https://images.ecency.com/DQmeiSFdbhacCQJTdrbLqmcuKEfowkjrbuXFTEXjooQY2aE/sd_card.png"/></div><strong>µSD-card – </strong>This is a <a href="https://www.pbtech.co.nz/product/MEMSDK321122/" target="_blank">16GB SanDisk Ultra</a> micro-SD card which I had laying around at home, amongst all of my spare parts. I think this particular one used to be installed in a tablet PC at one stage. I tend to move stuff around and recycle it often. I know this isn't a good practice when setting up a server, but I have to live within tight budget constraints as well, being elderly and retired, and on a fixed weekly income now.</p>
+  <hr/>
+  <p><div class="pull-left"><img src="https://images.ecency.com/DQmXgQ3Lyx6w3oSiAAuA2q33enQeQMhHX8kSDV2sHhtfHL8/reader.png"/></div><strong>SD-card reader – </strong>This is a USB2.0, Transcend TS-RDP5K SD-card reader. It is part of the reason that the start of my project was delayed. This handy piece of tech had gone missing in my home somewhere, and I needed to find it before I could start my project!</p>
+  <hr/>
+  <p><div class="pull-right"></div><img src="https://images.ecency.com/DQmXqtDZfcfjhp9HC6rYvyuVu9fsw2PmoLQzb485Wd1RsAy/laptop.png"/></div><strong>Laptop – </strong>My trusty Lenovo ThinkPad T400 laptop is being used to set up the Raspberry Pi, and it will ultimately become one of the client machines connecting to the new server. This is a run-of-the-mill business laptop, with a 2.26GHz Intel® Core™2 Duo processor, 4GB  </p>
+  <p>
+    <center>
+      <img src="https://images.ecency.com/DQmdk1kErvvHhZVAaQHHZyu8GcnVw6KQz9CPs2voEHh2YGn/maori_divider.png"/>
+    </center>
+  </p>
+  <h2>How it all begins.</h2>
+  <p>I'm at my laptop, logged in to the operating system, which is currently still Ubuntu 20.04 LTS (Focal Fossa) for now. The first thing that I reach for is my µSD-card and the card reader. I know that there will be some crap on it from the last time I used it, but I am diligent with my backups, so I'm unafraid to blank the card and start again. The first command I issue from the command line terminal will do just that. First, I need to ensure that I'm working on the correct drive. I'd hate to wipe out my booting system!<br/>
+<code><pre>user@laptop:~$ lsblk
+  ( ... output trimmed ... )
+  sdb      8:16   1  29.5G  0 disk
+  ├─sdb1   8:17   1   256M  0 part /media/user/boot
+  └─sdb2   8:18   1  29.3G  0 part /media/user/rootfs</pre></code></p>
+  <p>Okay, so it looks like I am after the <code>sdb</code> drive, in my case. If you are following along, it is important that you get this right for your own environment!<br/>
+<code><pre>user@laptop:~$ sudo dd if=/dev/zero of=<strong>/dev/sdb</strong> bs=4096 status=progress
+  [sudo] password for user:
+  31687921664 bytes (32 GB, 30 GiB) copied, 2272 s, 13.9 MB/s
+  dd: error writing '/dev/sdb': No space left on device
+  7737089+0 records in
+  7737088+0 records out
+  31691112448 bytes (32 GB, 30 GiB) copied, 2272.42 s, 13.9 MB/s</pre></code></p>
+  <p>Can anyone spot the mistake that I have made already? In my case, it isn't a major issue, and I can carry on. But for you, this might be a disaster! Hint: <spoiler>compare the capacity of the µSD-card that I just blanked out.</spoiler></p>
+  <p>
+    <center>
+      <img src="https://images.ecency.com/DQmdk1kErvvHhZVAaQHHZyu8GcnVw6KQz9CPs2voEHh2YGn/maori_divider.png"/>
+    </center>
+  </p>
+  <h2>Section heading.</h2>
+  <p></p>
+  <p></p>
+  <p>
+    <center>
+      <img src="https://images.ecency.com/DQmdk1kErvvHhZVAaQHHZyu8GcnVw6KQz9CPs2voEHh2YGn/maori_divider.png"/>
+    </center>
+  </p>
+</div>
+<h2>Image Credits</h2>
+<sub>
+<ol>
+<li><strong>post-head.png</strong> – Remix created by @frittro, using elements by <a href="https://all-free-download.com/free-vector/download/maori_border_pattern_119722.html" target="_blank">@pantone801</a>; </li>
+<li>Various "fair use" organisation and company logos, including Hive, Steem, NZ Heart Fdn, Mental Health Fdn of NZ, etc.</li>
+<li><strong></strong> – Original photos by @frittro.</li>
+<li><strong>maori-divider.png</strong> – Original image by <a href="https://all-free-download.com/free-vector/download/maori_border_pattern_119722.html" target="_blank">@pantone801</a>. Remix created by @frittro.</li>
+<li><strong>frittro-maori-footer.png</strong> – Remix created by @frittro, using elements by <a href="https://all-free-download.com/free-vector/download/maori_border_pattern_119722.html" target="_blank">@pantone801</a>; </li>
+</ol>
+</sub>
+  <center>
+    <img src="https://images.ecency.com/DQmZbXY6muX5FAGLvk64eiVXLRiYaArXCHyq697y7HBcKoU/frittro_maori_footer.png"/>
+  </center>
+</p>
+
+<!-- post ends -->
