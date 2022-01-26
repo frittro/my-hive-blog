@@ -1,24 +1,11 @@
-<!-- @format -->
-
-<!--
-
-Community: hive-163521 (STEMGeeks)
-
-Title: Deploying YunoHost v4.1.7.2 onto the µSD-card
-
-Tags (Content, Community, Tribe): stem, linux, homelab, raspberrypi, yunohost, techsupport, silverbloggers, proofofbrain
-
--->
-
-<!-- post begins -->
 <div class="text-justify">
   <p>
     <center>
-      <img src="https://images.ecency.com/DQmSEcadVAvffUn2365CgUM9wUYC4EbWUDMCWWiv1YnjqR5/post_head.png"/>
+      <img src="https://images.ecency.com/DQmSmsfmqqig6ucLZWZabarHeFAWkqCEst9KBAtdxENbZFg/post_head.png"/>
     </center>
   </p>
-  <p>
-    <em>Post summary goes here. 
+  <p><em>This is the first blog post in this series about setting up my homelab as a selfhosted hub for my Web2.0 activity, including selfhosting software to replace Google, Apple, Facebook, Amazon, and Microsoft ( #gafam ) in my online life. In this post I will be downloading the operating system that I will use, and burning it to a µSD-card.</em></p> 
+<blockquote>ℹ️ Throughout this step-by-step guide, the <code><div class="phishy">red text</div></code> indicates commands which are to be entered in the terminal, by the user.</blockquote> 
     <hr/>
     <ul>
       <li><strong>Stage: </strong>Deploy test-fmds.noho.st</li>
@@ -40,7 +27,7 @@ Tags (Content, Community, Tribe): stem, linux, homelab, raspberrypi, yunohost, t
   <hr/>
   <p><div class="pull-left"><img src="https://images.ecency.com/DQmXgQ3Lyx6w3oSiAAuA2q33enQeQMhHX8kSDV2sHhtfHL8/reader.png"/></div><strong>SD-card reader – </strong>This is a USB2.0, Transcend TS-RDP5K SD-card reader. It is part of the reason that the start of my project was delayed. This handy piece of tech had gone missing in my home somewhere, and I needed to find it before I could start my project!</p>
   <hr/>
-  <p><div class="pull-right"><img src="https://images.ecency.com/DQmXqtDZfcfjhp9HC6rYvyuVu9fsw2PmoLQzb485Wd1RsAy/laptop.png"/></div><strong>Laptop – </strong>My trusty Lenovo ThinkPad T400 laptop is being used to set up the Raspberry Pi, and it will ultimately become one of the client machines connecting to the new server. This is a run-of-the-mill business laptop, with a 2.26GHz Intel® Core™2 Duo processor, 4GB  </p>
+  <p><div class="pull-right"><img src="https://images.ecency.com/DQmXqtDZfcfjhp9HC6rYvyuVu9fsw2PmoLQzb485Wd1RsAy/laptop.png"/></div><strong>Laptop – </strong>My trusty Lenovo ThinkPad T400 laptop is being used to set up the Raspberry Pi, and it will ultimately become one of the client machines connecting to the new server. This is a run-of-the-mill business laptop, with a 2.26GHz Intel® Core™2 Duo processor, 4GB of RAM, and a Seagate ST9250315AS 2.5" 250GB Hard Drive (spinning rust).</p>
   <p>
     <center>
       <img src="https://images.ecency.com/DQmdk1kErvvHhZVAaQHHZyu8GcnVw6KQz9CPs2voEHh2YGn/maori_divider.png"/>
@@ -48,7 +35,7 @@ Tags (Content, Community, Tribe): stem, linux, homelab, raspberrypi, yunohost, t
   </p>
   <h2>How it all begins.</h2>
   <p>I'm at my laptop, logged in to the operating system, which is currently still running Ubuntu 20.04 LTS (Focal Fossa) for now. The first thing that I reach for is my µSD-card and the card reader. I know that there will be some crap on it from the last time I used it, but I am diligent with my backups, so I'm unafraid to blank the card and start again. The first command I issue from the command line terminal will do just that. First, I need to ensure that I'm working on the correct drive. I'd hate to wipe out my booting system!
-<code><pre>user@laptop:~$ lsblk
+<code><pre>user@laptop:~$ <div class="phishy">lsblk</div>
   ( ... output trimmed ... )
   sda      8:0    0 232.9G  0 disk 
   └─sda1   8:1    0 232.9G  0 part /
@@ -56,7 +43,7 @@ Tags (Content, Community, Tribe): stem, linux, homelab, raspberrypi, yunohost, t
   ├─sdb1   8:17   1   256M  0 part /media/user/boot
   └─sdb2   8:18   1  29.3G  0 part /media/user/rootfs</pre></code></p>
   <p>Okay, so it looks like I am after the <code>sdb</code> drive, in my case. If you are following along, it is important that you get this right for your own environment!
-<code><pre>user@laptop:~$ sudo dd if=/dev/zero of=<strong>/dev/sdb</strong> bs=4096 status=progress
+<code><pre>user@laptop:~$ <div class="phishy">sudo dd if=/dev/zero of=<strong>/dev/sdb</strong> bs=4096 status=progress</div>
   [sudo] password for user:
   31687921664 bytes (32 GB, 30 GiB) copied, 2272 s, 13.9 MB/s
   dd: error writing '/dev/sdb': No space left on device
@@ -66,9 +53,9 @@ Tags (Content, Community, Tribe): stem, linux, homelab, raspberrypi, yunohost, t
   <p><blockquote><sup>⚠️ Can anyone spot the mistake that I have made already? In my case, it isn't a major issue, and I can carry on. But for you, this might be a disaster! Hint: compare the capacity of the µSD-card that I just blanked out.</sup></blockquote></p>
   <p>Now that my µSD-card is completely blank, it is time to put the operating system onto it. I will be using the <a href="https://yunohost.org/en/install/hardware:rpi2plus" target="_blank"> <img src="https://images.ecency.com/DQmUvNcWr7aGv2B2vec5unowhbMymYBNUEVXRywKJpfvvPB/yunohost_18px.png"/> YunoHost v4.1.7.2</a> distribution initially, and then I will upgrade it to  <img src="https://images.ecency.com/DQmUvNcWr7aGv2B2vec5unowhbMymYBNUEVXRywKJpfvvPB/yunohost_18px.png"/> YunoHost v4.3.4.2 later. The reason that I'm installing v4.1.7.2 initially here is that it is the latest bundled version for the Raspberry Pi 4+ at present. If you are reading this in the future and following these step-by-step instructions, it is always best to use which ever installation package is the latest for your hardware platform. At present, the YunoHost maintainers haven't packaged the latest (v4.3.4.2) bundle for the Raspberry Pi yet, so it is an upgrade option only for me, once I have v4.1.7.2 installed.</p>
   <p>Before we begin downloading, we need to find a place to put everything on the local computer, in my case, on my laptop. I have pre-created a folder for this purpose, and I will just change to it now...
-<code><pre>user@laptop:~$ cd ~/dev/rpi/deployment/test-fmds.noho.st</pre></code></p>
+<code><pre>user@laptop:~$ <div class="phishy">cd ~/dev/rpi/deployment/test-fmds.noho.st</div></pre></code></p>
   <p>Next we are going to get the installation package itself. You can, of course, do this all from the Web, but I prefer to use the terminal for this, as it is self-documenting, I can just copy and paste the output from the terminal.
-<code><pre>user@laptop:~$ wget https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip
+<code><pre>user@laptop:~$ <div class="phishy">wget https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip</div>
   --2022-01-16 14:03:07--  https://build.yunohost.org/yunohost-buster-4.1.7.2- rpi-stable.img.zip
   Resolving build.yunohost.org (build.yunohost.org)... 2001:910:1410::1, 80.67.172.144
   Connecting to build.yunohost.org (build.yunohost.org)|2001:910:1410::1|:443... connected.
@@ -78,7 +65,7 @@ Tags (Content, Community, Tribe): stem, linux, homelab, raspberrypi, yunohost, t
   yunohost-buster-4.1.7.2-rpi-sta 100%[====================================================>] 650.64M   101KB/s    in 64m 50s 
   2022-01-16 15:07:59 (171 KB/s) - ‘yunohost-buster-4.1.7.2-rpi-stable.img.zip’ saved [682245487/682245487]</pre></code></p>
   <p>Now we will get the checksum file for that installation package...
-  <code><pre>user@laptop:~$ wget https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip.sha256sum
+  <code><pre>user@laptop:~$ <div class="phishy">wget https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip.sha256sum</div>
   --2022-01-16 16:13:52--  https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip.sha256sum
   Resolving build.yunohost.org (build.yunohost.org)... 2001:910:1410::1, 80.67.172.144
   Connecting to build.yunohost.org (build.yunohost.org)|2001:910:1410::1|:443... connected.
@@ -88,7 +75,7 @@ Tags (Content, Community, Tribe): stem, linux, homelab, raspberrypi, yunohost, t
   yunohost-buster-4.1.7.2-rpi-sta 100%[====================================================>]     109  --.-KB/s    in 0s      
   2022-01-16 16:13:54 (6.99 MB/s) - ‘yunohost-buster-4.1.7.2-rpi-stable.img.zip.sha256sum’ saved [109/109]</pre></code></p>
  <p>...and get the GPG signature for the installation package...
-<code><pre>user@laptop:~$ wget https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip.sig
+<code><pre>user@laptop:~$ <div class="phishy">wget https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip.sig</div>
   --2022-01-16 16:15:29--  https://build.yunohost.org/yunohost-buster-4.1.7.2-rpi-stable.img.zip.sig
   Resolving build.yunohost.org (build.yunohost.org)... 2001:910:1410::1, 80.67.172.144
   Connecting to build.yunohost.org (build.yunohost.org)|2001:910:1410::1|:443... connected.
@@ -106,18 +93,44 @@ Tags (Content, Community, Tribe): stem, linux, homelab, raspberrypi, yunohost, t
   <h2>Verifying and validating.</h2>
   <p>The next two steps are vitally important for making sure that the package we downloaded in the previous step is both internally consistent (eg. the file downloaded correctly), and that it has not been modified in any way since it was published by the package maintainers. This involves both <strong>verifying</strong> and <strong>validating</strong> the downloaded package. Most people will know how to <em>verify</em> a package using a checksum. However, what happens if, after the package was released, some nefarious person has modified the code, re-uploaded it, with a new checksum? This is where <em>validating</em> comes in to play.</p>
   <p>To <em>verify</em> our downloaded package, we simply use the <code>sha256sum</code> command...
-<code><pre>user@laptop:~$ sha256sum -c yunohost-buster-4.1.7.2-rpi-stable.img.zip.sha256sum
+<code><pre>user@laptop:~$ <div class="phishy">sha256sum -c yunohost-buster-4.1.7.2-rpi-stable.img.zip.sha256sum</div>
   yunohost-buster-4.1.7.2-rpi-stable.img.zip: OK</pre></code></p>
-  <p>That was quick and easy. The next step is a little more involved. We will now <em>validate</em> our downloaded package.</p>
-
+  <p>That was quick and easy. The next step is a little more involved. We will now <em>validate</em> our downloaded package. To achieve this, we will first need to know where the YunoHost package maintainers official public key is kept. I had trouble finding this initially, but in <a href="https://forum.yunohost.org/t/lack-in-installation-documentation-verify-integrity-and-signature/5799/8" target="_blank">this post on the YunoHost forums</a> I was given the correct location, of <a href="https://forge.yunohost.org/yunohost.asc" target="_blank">https://forge.yunohost.org/yunohost.asc</a>. Now we can download the package maintainers' official public key, with the command...
+  <code><pre>user@laptop:~$ <div class="phishy">wget https://forge.yunohost.org/yunohost.asc</div>
+  --2022-01-16 16:23:53--  https://forge.yunohost.org/yunohost.asc
+  Resolving forge.yunohost.org (forge.yunohost.org)... 2001:910:1410::1, 80.67.172.144
+  Connecting to forge.yunohost.org (forge.yunohost.org)|2001:910:1410::1|:443... connected.
+  HTTP request sent, awaiting response... 200 OK
+  Length: 2138 (2.1K) [application/octet-stream]
+  Saving to: ‘yunohost.asc’
+  yunohost.asc                    100%[====================================================>]   2.09K  --.-KB/s    in 0s      
+  2022-01-16 16:23:56 (118 MB/s) - ‘yunohost.asc’ saved [2138/2138
+</pre></code></p>
+  <p>Now that we have the public key as a file, let's go ahead and add it to our GPG keychain, using the command...
+<code><pre>user@laptop:~$ <div class="phishy">gpg  --import yunohost.asc</div></pre></code></p>
+  <p>As we now have the proper key in our GPG keychain, we can verify the key file and the package itself that we downloaded earlier, by using the command...
+<code><pre>user@laptop:~$ <div class="phishy">gpg --verify yunohost-buster-4.1.7.2-rpi-stable.img.zip.sig yunohost-buster-4.1.7.2-rpi-stable.img.zip</div>
+  gpg: Signature made Mon 22 Feb 2021 12:36:41 NZDT
+  gpg:                using RSA key 1904C5B42E4856DCD4E9CF96360AAF3259A3E6FF
+  gpg: Good signature from "YunoHost <build@yunohost.org>" [full]</pre></code></p>
+<p>That is it! We are ready now to burn the YunoHost v4.1.7.2 package onto our µSD-card itself!</p>
   <p>
     <center>
       <img src="https://images.ecency.com/DQmdk1kErvvHhZVAaQHHZyu8GcnVw6KQz9CPs2voEHh2YGn/maori_divider.png"/>
     </center>
   </p>
-  <h2>Section heading.</h2>
-  <p></p>
-  <p></p>
+  <h2>Getting YunoHost onto the µSD-card.</h2>
+  <p>Now that we have downloaded, verified, and validated our operating system, it is time to put it onto the µSD-card, so that we can boot it up. We'll be using the same <code>dd</code> tool that we used earlier for blanking the µSD-card, but this time we'll use it to put data onto the card, instead. First, let's extract the zip file that we have downloaded, using the command...<code><pre>user@laptop:~$ <div class="phishy">unzip yunohost-buster-4.1.7.2-rpi-stable.img.zip</div>
+  Archive:  yunohost-buster-4.1.7.2-rpi-stable.img.zip
+    inflating: 2021-02-21-yunohost-lite-qemu.img</pre></code></p>
+  <p>Now, as a final step here, we will be burning the extracted file onto our µSD-card. Make absolutely sure that we are writing to the correct device, with the <code>lsblk</code> command again, if need be. Then use the command...
+<code><pre>user@laptop:~$ <div class="phishy">sudo dd if=2021-02-21-yunohost-lite-qemu.img of=/dev/sdb bs=64k oflag=dsync status=progress</div>
+  [sudo] password for user: 
+  2395996160 bytes (2.4 GB, 2.2 GiB) copied, 227 s, 10.6 MB/s 
+  36672+0 records in
+  36672+0 records out
+  2403336192 bytes (2.4 GB, 2.2 GiB) copied, 227.628 s, 10.6 MB/s</pre></code></p>
+<p>We should now have a bootable µSD-card containing <img src="https://images.ecency.com/DQmUvNcWr7aGv2B2vec5unowhbMymYBNUEVXRywKJpfvvPB/yunohost_18px.png"/> YunoHost v4.1.7.2 on it, ready to be put into our <img src="https://images.ecency.com/DQmdtFufSoeZeRAsTjjDWHqd6rKxQZiWC58iBMJtQizPbUn/raspberrypi_18px.png"/> Raspberry Pi and booted up for the first time! That will be the subject of my next blog post in this series. In the meantime, if you have any questions or comments about this procedure so far, please leave me a comment on this post. If you have come here from the  <img src="https://images.ecency.com/DQmUvNcWr7aGv2B2vec5unowhbMymYBNUEVXRywKJpfvvPB/yunohost_18px.png"/> YunoHost user community and don't yet have a <img src="https://images.ecency.com/DQma2JHmpCFGMiJob7Cc2J8KhZuAZ1NucPSWbga61xs7Cn9/hive_18px.png"/> HIVE account, you can get one <a href="https://ecency.com/signup?referral=frittro" target="_blank">here</a>.</p>
   <p>
     <center>
       <img src="https://images.ecency.com/DQmdk1kErvvHhZVAaQHHZyu8GcnVw6KQz9CPs2voEHh2YGn/maori_divider.png"/>
@@ -127,16 +140,15 @@ Tags (Content, Community, Tribe): stem, linux, homelab, raspberrypi, yunohost, t
 <h2>Image Credits</h2>
 <sub>
 <ol>
-<li><strong>post-head.png</strong> – Remix created by @frittro, using elements by <a href="https://all-free-download.com/free-vector/download/maori_border_pattern_119722.html" target="_blank">@pantone801</a>; </li>
-<li>Various "fair use" organisation and company logos, including Hive, Steem, NZ Heart Fdn, Mental Health Fdn of NZ, etc.</li>
-<li><strong></strong> – Original photos by @frittro.</li>
+<li><strong>post-head.png</strong> – Remix created by @frittro, using elements by <a href="https://all-free-download.com/free-vector/download/maori_border_pattern_119722.html" target="_blank">@pantone801</a>; an <a href="https://pixabay.com/photos/bud-rose-frost-garden-flower-4668335/" target="_blank">image from Pixabay </a> by <a href="" trget="_blank">@perezvcking</a>; and various "fair use" icons and logos.</li>
+<li>Various "fair use" organisation and company logos, including Hive, Raspberry Pi, YunoHost, etc.</li>
+<li><strong>File:Raspberry Pi 4 Model B - Side.jpg</strong>. (2022, January 9). Wikimedia Commons, the free media repository. Retrieved 08:17, January 18, 2022 from <a href="https://commons.wikimedia.org/w/index.php?title=File:Raspberry_Pi_4_Model_B_-_Side.jpg&oldid=620492328" target="_blank">Wikipedia</a>.</li>
+<li><strong>sd-card.png</strong>, <strong>reader.png</strong>, and <strong>laptop.png</strong> – Original photos by @frittro.</li>
 <li><strong>maori-divider.png</strong> – Original image by <a href="https://all-free-download.com/free-vector/download/maori_border_pattern_119722.html" target="_blank">@pantone801</a>. Remix created by @frittro.</li>
-<li><strong>frittro-maori-footer.png</strong> – Remix created by @frittro, using elements by <a href="https://all-free-download.com/free-vector/download/maori_border_pattern_119722.html" target="_blank">@pantone801</a>; </li>
+<li><strong>frittro-maori-footer.png</strong> – Remix created by @frittro, using elements by <a href="https://all-free-download.com/free-vector/download/maori_border_pattern_119722.html" target="_blank">@pantone801</a>.</li>
 </ol>
 </sub>
   <center>
     <img src="https://images.ecency.com/DQmZbXY6muX5FAGLvk64eiVXLRiYaArXCHyq697y7HBcKoU/frittro_maori_footer.png"/>
   </center>
 </p>
-
-<!-- post ends -->
